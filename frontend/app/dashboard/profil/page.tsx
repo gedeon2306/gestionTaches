@@ -17,6 +17,7 @@ const fadeUp = (i: number) => ({
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [formData, setFormData] = useState({
     firstName: 'Jean',
     lastName: 'Dupont',
@@ -87,6 +88,11 @@ export default function ProfilePage() {
   const handleSave = () => {
     setIsEditing(false);
     console.log('Profile saved:', formData);
+  };
+
+  const handleSaveEmail = () => {
+    setIsEditingEmail(false);
+    console.log('Email saved:', formData.email);
   };
 
   return (
@@ -259,7 +265,7 @@ export default function ProfilePage() {
               {formData.title}
             </p>
             
-            <div className="social-links" style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+            <div className="social-links" style={{ display: 'flex', justifyContent: 'center', gap: 8, alignItems: 'center' }}>
               {formData.github && (
                 <a href={`https://github.com/${formData.github}`} style={{
                   width: 32, height: 32, borderRadius: 6,
@@ -308,6 +314,21 @@ export default function ProfilePage() {
                   <FiGlobe size={14} />
                 </a>
               )}
+              <button 
+                onClick={() => console.log('Modifier les réseaux sociaux')}
+                style={{
+                  width: 32, height: 32, borderRadius: 6,
+                  background: '#f0faf5', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', color: '#0f6e56',
+                  border: '1px solid #e8e6e1', cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#e8f5e8'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#0f6e56'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f0faf5'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e6e1'; }}
+                title="Modifier les réseaux sociaux"
+              >
+                <FiEdit2 size={12} />
+              </button>
             </div>
           </motion.div>
 
@@ -431,36 +452,117 @@ export default function ProfilePage() {
             <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
                 <label style={{ fontSize: 11.5, color: '#b0aeaa', display: 'block', marginBottom: 6 }}>
-                  Email
+                  Téléphone
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <FiMail size={14} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 12.5, color: '#888580' }}>
-                    {formData.email}
-                  </span>
-                </div>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  style={{
+                    width: '100%', padding: '8px 12px',
+                    border: '1px solid #e8e6e1', borderRadius: 6,
+                    fontSize: 12.5, color: '#1a1a1a',
+                    background: isEditing ? '#fff' : '#f9f8f7',
+                    outline: 'none', opacity: isEditing ? 1 : 0.7,
+                  }}
+                />
               </div>
               
               <div>
                 <label style={{ fontSize: 11.5, color: '#b0aeaa', display: 'block', marginBottom: 6 }}>
-                  Téléphone
+                  Localisation
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <FiPhone size={14} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 12.5, color: '#888580' }}>
-                    {formData.phone}
-                  </span>
-                </div>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  style={{
+                    width: '100%', padding: '8px 12px',
+                    border: '1px solid #e8e6e1', borderRadius: 6,
+                    fontSize: 12.5, color: '#1a1a1a',
+                    background: isEditing ? '#fff' : '#f9f8f7',
+                    outline: 'none', opacity: isEditing ? 1 : 0.7,
+                  }}
+                />
               </div>
             </div>
+          </motion.div>
 
-            <div style={{ marginTop: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FiMapPin size={14} style={{ color: '#b0aeaa' }} />
-                <span style={{ fontSize: 12.5, color: '#888580' }}>
-                  {formData.location}
-                </span>
+          {/* Email section */}
+          <motion.div {...fadeUp(3.5)} className="content-card" style={{
+            background: '#fff', border: '1px solid #e8e6e1',
+            borderRadius: 12, padding: '20px',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div>
+                <h3 style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a', margin: '0 0 4px' }}>
+                  Email
+                </h3>
+                <p style={{ fontSize: 12.5, color: '#888580', margin: 0 }}>
+                  {isEditingEmail ? 'Modifiez votre adresse email' : 'Adresse email principale'}
+                </p>
               </div>
+              <button 
+                onClick={() => isEditingEmail ? handleSaveEmail() : setIsEditingEmail(true)}
+                style={{
+                  background: isEditingEmail ? '#1d9e75' : '#f0faf5', 
+                  color: isEditingEmail ? '#fff' : '#0f6e56', 
+                  border: '1px solid #e8e6e1',
+                  borderRadius: 6, padding: '6px 12px', fontSize: 11.5,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { 
+                  if (isEditingEmail) {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#0f6e56';
+                  } else {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#e8f5e8'; 
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#0f6e56';
+                  }
+                }}
+                onMouseLeave={e => { 
+                  if (isEditingEmail) {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#1d9e75';
+                  } else {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#f0faf5'; 
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e6e1';
+                  }
+                }}
+              >
+                {isEditingEmail ? <FiCheckCircle size={11} /> : <FiEdit2 size={11} />}
+                {isEditingEmail ? 'Enregistrer' : 'Modifier'}
+              </button>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px', background: isEditingEmail ? '#fff' : '#f9f8f7', borderRadius: 6, border: isEditingEmail ? '1px solid #e8e6e1' : 'none' }}>
+              <FiMail size={14} style={{ color: '#b0aeaa' }} />
+              {isEditingEmail ? (
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  autoFocus
+                  style={{
+                    flex: 1,
+                    padding: '4px 8px',
+                    border: '1px solid #e8e6e1',
+                    borderRadius: 4,
+                    fontSize: 12.5,
+                    color: '#1a1a1a',
+                    background: '#fff',
+                    outline: 'none',
+                  }}
+                />
+              ) : (
+                <span style={{ fontSize: 12.5, color: '#1a1a1a' }}>
+                  {formData.email}
+                </span>
+              )}
             </div>
           </motion.div>
 
@@ -469,9 +571,25 @@ export default function ProfilePage() {
             background: '#fff', border: '1px solid #e8e6e1',
             borderRadius: 12, padding: '20px',
           }}>
-            <h3 style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a', margin: '0 0 16px' }}>
-              Compétences
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a', margin: 0 }}>
+                Compétences
+              </h3>
+              <button 
+                onClick={() => console.log('Modifier les compétences')}
+                style={{
+                  background: '#f0faf5', color: '#0f6e56', border: '1px solid #e8e6e1',
+                  borderRadius: 6, padding: '6px 12px', fontSize: 11.5,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#e8f5e8'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#0f6e56'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f0faf5'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e6e1'; }}
+              >
+                <FiEdit2 size={11} />
+                Modifier
+              </button>
+            </div>
             
             <div className="skills-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {skills.map((skill, i) => (
