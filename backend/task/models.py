@@ -42,6 +42,6 @@ class Session(models.Model):
     
 class VerificationToken(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    token = models.CharField(max_length=255)
+    token = models.CharField(max_length=255, unique=True)
     expires = models.DateField()
 
