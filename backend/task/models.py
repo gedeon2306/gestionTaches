@@ -22,7 +22,7 @@ class User(AbstractBaseUser):
 
 class Account(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    userID = models.CharField(max_length=255)
+    userID = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_account')
     type = models.CharField(max_length=255)
     provider = models.CharField(max_length=255)
     providerAccountId = models.CharField(max_length=255)
