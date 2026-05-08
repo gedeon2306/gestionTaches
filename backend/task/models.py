@@ -17,7 +17,7 @@ class User(AbstractBaseUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    emailVerified = models.EmailField(unique=True)
+    emailVerified = models.EmailField()
     image = models.CharField(max_length=255, default="")
 
 class Account(models.Model):
@@ -36,7 +36,7 @@ class Account(models.Model):
     
 class Session(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sessionToken = models.CharField(max_length=255)
+    sessionToken = models.CharField(max_length=255, unique=True)
     userID = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_session')
     expires = models.DateField()
     
