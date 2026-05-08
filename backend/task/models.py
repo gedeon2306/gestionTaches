@@ -34,3 +34,9 @@ class Account(models.Model):
     id_token = models.TextField()
     session_state = models.CharField(max_length=255)
     
+class Session(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sessionToken = models.CharField(max_length=255)
+    userID = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_session')
+    expires = models.DateField()
+
