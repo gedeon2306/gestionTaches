@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   FiPlus, FiSearch, FiMoreHorizontal, FiFolder, FiCalendar,
-  FiUser, FiTrendingUp, FiClock, FiCheckCircle,
+  FiUser, FiTrendingUp, FiClock, FiCheckCircle, FiEye,
+  FiEdit2, FiTrash2,
 } from 'react-icons/fi';
 
 const PROJECTS = [
@@ -84,6 +85,7 @@ export default function ProjectsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
   const filteredProjects = PROJECTS.filter(project => {
     const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -92,6 +94,26 @@ export default function ProjectsPage() {
     const matchesPriority = priorityFilter === 'all' || project.priority === priorityFilter;
     return matchesSearch && matchesStatus && matchesPriority;
   });
+
+  const handleMenuClick = (projectId: number, action: string) => {
+    switch (action) {
+      case 'view-tasks':
+        // Rediriger vers les tâches du projet
+        console.log(`Voir les tâches du projet ${projectId}`);
+        break;
+      case 'edit':
+        // Ouvrir le formulaire d'édition
+        console.log(`Modifier le projet ${projectId}`);
+        break;
+      case 'delete':
+        // Supprimer le projet
+        if (confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
+          console.log(`Supprimer le projet ${projectId}`);
+        }
+        break;
+    }
+    setActiveMenu(null);
+  };
 
   const stats = {
     total: PROJECTS.length,
@@ -293,15 +315,114 @@ export default function ProjectsPage() {
                     {project.name}
                   </h3>
                 </div>
-                <button style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  color: '#c8c6c2', padding: 4, borderRadius: 4,
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}>
-                  <FiMoreHorizontal size={14} />
-                </button>
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    onClick={() => setActiveMenu(activeMenu === project.id ? null : project.id)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: '#c8c6c2', padding: 4, borderRadius: 4,
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}
+                  >
+                    <FiMoreHorizontal size={14} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {activeMenu === project.id && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                        transition={{ duration: 0.15 }}
+                        style={{
+                          position: 'absolute',
+                          top: 32,
+                          right: 0,
+                          background: '#fff',
+                          border: '1px solid #e8e6e1',
+                          borderRadius: 8,
+                          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                          overflow: 'hidden',
+                          minWidth: 160,
+                          zIndex: 50,
+                        }}
+                      >
+                        <button
+                          onClick={() => handleMenuClick(project.id, 'view-tasks')}
+                          style={{
+                            width: '100%',
+                            padding: '10px 12px',
+                            background: 'none',
+                            border: 'none',
+                            textAlign: 'left',
+                            fontSize: 12.5,
+                            color: '#1a1a1a',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            transition: 'background 0.12s',
+                          }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f4f1'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                        >
+                          <FiEye size={13} style={{ color: '#888580' }} />
+                          Voir les tâches
+                        </button>
+                        
+                        <div style={{ height: 1, background: '#f0efeb' }} />
+                        
+                        <button
+                          onClick={() => handleMenuClick(project.id, 'edit')}
+                          style={{
+                            width: '100%',
+                            padding: '10px 12px',
+                            background: 'none',
+                            border: 'none',
+                            textAlign: 'left',
+                            fontSize: 12.5,
+                            color: '#1a1a1a',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            transition: 'background 0.12s',
+                          }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f4f1'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                        >
+                          <FiEdit2 size={13} style={{ color: '#888580' }} />
+                          Modifier
+                        </button>
+                        
+                        <button
+                          onClick={() => handleMenuClick(project.id, 'delete')}
+                          style={{
+                            width: '100%',
+                            padding: '10px 12px',
+                            background: 'none',
+                            border: 'none',
+                            textAlign: 'left',
+                            fontSize: 12.5,
+                            color: '#c0392b',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            transition: 'background 0.12s',
+                          }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fff0f0'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                        >
+                          <FiTrash2 size={13} style={{ color: '#c0392b' }} />
+                          Supprimer
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
 
               <p style={{ fontSize: 12.5, color: '#888580', margin: '0 0 16px', lineHeight: 1.4 }}>
