@@ -39,4 +39,9 @@ class Session(models.Model):
     sessionToken = models.CharField(max_length=255)
     userID = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_session')
     expires = models.DateField()
+    
+class VerificationToken(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    token = models.CharField(max_length=255)
+    expires = models.DateField()
 
