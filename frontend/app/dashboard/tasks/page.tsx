@@ -38,8 +38,26 @@ export default function TasksPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [tasks, setTasks] = useState(TASKS);
 
-  const filteredTasks = TASKS.filter(task => {
+  const toggleTaskStatus = (taskId: number) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => {
+        if (task.id === taskId) {
+          if (task.status === 'done') {
+            return { ...task, status: 'todo' };
+          } else if (task.status === 'todo') {
+            return { ...task, status: 'inprogress' };
+          } else {
+            return { ...task, status: 'done' };
+          }
+        }
+        return task;
+      })
+    );
+  };
+
+  const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.project.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
@@ -104,7 +122,7 @@ export default function TasksPage() {
               Mes tâches
             </h2>
             <p style={{ fontSize: 12.5, color: '#888580', margin: 0 }}>
-              {filteredTasks.length} tâches trouvées
+              {tasks.length} tâches trouvées
             </p>
           </div>
           <button className="button-text" style={{
@@ -195,10 +213,15 @@ export default function TasksPage() {
               onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <button style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  padding: 0, marginTop: 2,
-                }}>
+                <button 
+                  onClick={() => toggleTaskStatus(task.id)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    padding: 0, marginTop: 2, transition: 'transform 0.15s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}
+                >
                   {task.status === 'done'
                     ? <FiCheckCircle size={16} style={{ color: '#1d9e75' }} />
                     : <FiCircle size={16} style={{ color: '#d8d6d2' }} />
