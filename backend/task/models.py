@@ -12,6 +12,13 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+    
+class User(AbstractBaseUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    emailVerified = models.EmailField(unique=True)
+    image = models.CharField(max_length=255, default="")
 
 class Account(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -26,3 +33,4 @@ class Account(models.Model):
     scope = models.CharField(max_length=255)
     id_token = models.TextField()
     session_state = models.CharField(max_length=255)
+    
