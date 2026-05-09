@@ -1,10 +1,11 @@
 'use client';
 
+import { signIn } from "next-auth/react";
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { FiArrowRight } from 'react-icons/fi';
-import Link from 'next/link';
-import { AuthLayout, OAuthButtons, FormField, Spinner } from '../../../src/components/auth';
+import { AuthLayout, OAuthButtons, FormField, Spinner } from '@/src/components/auth';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,16 +15,36 @@ export default function LoginPage() {
   const [focused, setFocused] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleOAuth = (provider: 'google' | 'github') => {
-    if (provider === 'google') { setLoadingGoogle(true); setTimeout(() => setLoadingGoogle(false), 2000); }
-    else { setLoadingGithub(true); setTimeout(() => setLoadingGithub(false), 2000); }
+    if (provider === 'google') {
+      setLoadingGoogle(true);
+      signIn("google", { callbackUrl: "/dashboard" });
+    } else {
+      setLoadingGithub(true);
+      signIn("github", { callbackUrl: "/dashboard" });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingForm(true);
-    setTimeout(() => setLoadingForm(false), 2000);
+    setError("");
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,    // on gère la redirection nous-mêmes
+    });
+
+    if (result?.error) {
+      setError("Email ou mot de passe incorrect");
+      setLoadingForm(false);
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   return (
@@ -92,6 +113,11 @@ export default function LoginPage() {
             onTogglePassword={() => setShowPassword(!showPassword)}
           />
         </div>
+
+        {/* Error message */}
+        {error && (
+          <p style={{ color: 'red', fontSize: 12, marginTop: 5 }}>{error}</p>
+        )}
 
         {/* Submit */}
         <motion.button

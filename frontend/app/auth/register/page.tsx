@@ -1,10 +1,11 @@
 'use client';
 
+import { signIn } from "next-auth/react";
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { FiArrowRight } from 'react-icons/fi';
-import Link from 'next/link';
-import { AuthLayout, OAuthButtons, FormField, Spinner, PasswordStrength } from '../../../src/components/auth';
+import { AuthLayout, OAuthButtons, FormField, Spinner, PasswordStrength } from '@/src/components/auth';
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,16 +16,53 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleOAuth = (provider: 'google' | 'github') => {
-    if (provider === 'google') { setLoadingGoogle(true); setTimeout(() => setLoadingGoogle(false), 2000); }
-    else { setLoadingGithub(true); setTimeout(() => setLoadingGithub(false), 2000); }
+    if (provider === 'google') {
+      setLoadingGoogle(true);
+      signIn("google", { callbackUrl: "/dashboard" });
+    } else {
+      setLoadingGithub(true);
+      signIn("github", { callbackUrl: "/dashboard" });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingForm(true);
-    setTimeout(() => setLoadingForm(false), 2000);
+    setError("");
+
+    // 1. Créer le compte via Django
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register/`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      // Récupère la première erreur retournée par le serializer
+      const firstError = Object.values(data)[0];
+      setError(Array.isArray(firstError) ? firstError[0] : String(firstError));
+      setLoadingForm(false);
+      return
+    }
+
+    // 2. Connexion automatique après inscription
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (result?.ok) {
+      router.push("/dashboard");
+    } else {
+      setError("Inscription réussie mais connexion échouée, connecte-toi manuellement.");
+      router.push("/login");
+    }
   };
 
   return (
@@ -97,6 +135,11 @@ export default function RegisterPage() {
           />
           <PasswordStrength password={password} />
         </div>
+
+        {/* Error message */}
+        {error && (
+          <p style={{ color: 'red', fontSize: 12, marginTop: 5 }}>{error}</p>
+        )}
 
         {/* Terms */}
         <p style={{ fontSize: 11.5, color: '#b0aeaa', lineHeight: 1.5, margin: '2px 0 0' }}>
