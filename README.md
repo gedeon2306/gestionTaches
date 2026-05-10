@@ -2,7 +2,7 @@
 
 Une application web full-stack de gestion de tâches moderne avec authentification OAuth et interface utilisateur réactive.
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Ce projet est une application de gestion de tâches complète construite avec :
 - **Backend** : Django REST Framework avec authentification JWT
@@ -10,7 +10,7 @@ Ce projet est une application de gestion de tâches complète construite avec :
 - **Authentification** : Support OAuth (Google, GitHub) via NextAuth
 - **Base de données** : SQLite (configuré pour passer facilement à PostgreSQL)
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend (Django)
 - **Framework** : Django 6.0.3 avec Django REST Framework
@@ -29,7 +29,7 @@ Ce projet est une application de gestion de tâches complète construite avec :
 - **Notifications** : React Hot Toast
 - **Icônes** : React Icons
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 
 ### Authentification
 - Inscription et connexion par email/mot de passe
@@ -46,7 +46,7 @@ Ce projet est une application de gestion de tâches complète construite avec :
 - Profil utilisateur
 - Paramètres
 
-## 📁 Structure du Projet
+## Structure du Projet
 
 ```
 gestionTaches/
@@ -76,7 +76,7 @@ gestionTaches/
 └── README.md            # Ce fichier
 ```
 
-## 🛠️ Installation et Démarrage
+## Installation et Démarrage
 
 ### Prérequis
 - Python 3.8+
@@ -143,7 +143,7 @@ gestionTaches/
    ```
    L'application sera disponible sur `http://localhost:3000`
 
-## 🔧 Configuration
+## Configuration
 
 ### Variables d'environnement (Backend)
 ```env
@@ -164,13 +164,13 @@ GITHUB_CLIENT_ID=votre_github_client_id
 GITHUB_CLIENT_SECRET=votre_github_client_secret
 ```
 
-## 📚 API Documentation
+## API Documentation
 
 Une fois le backend démarré, accédez à :
 - **Swagger UI** : `http://localhost:8000/api/docs/`
 - **ReDoc** : `http://localhost:8000/api/redoc/`
 
-## 🧪 Tests
+## Tests
 
 ### Backend
 ```bash
@@ -184,7 +184,7 @@ cd frontend
 npm test
 ```
 
-## 🚀 Déploiement
+## Déploiement
 
 ### Production
 - Configurer `DEBUG=False` dans les settings Django
@@ -192,7 +192,7 @@ npm test
 - Configurer les variables d'environnement de production
 - Servir les fichiers statiques avec un service comme Nginx
 
-## 🤝 Contribuer
+## Contribuer
 
 1. Forker le projet
 2. Créer une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
@@ -200,11 +200,11 @@ npm test
 4. Pousser la branche (`git push origin feature/nouvelle-fonctionnalite`)
 5. Créer une Pull Request
 
-## 📝 License
+## License
 
 Ce projet est sous licence MIT.
 
-## 🔮 Roadmap
+## Roadmap
 
 - [ ] Ajout des fonctionnalités de gestion de tâches
 - [ ] Notifications en temps réel
