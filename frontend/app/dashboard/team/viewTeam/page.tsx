@@ -1,58 +1,94 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import {
-  FiPlus, FiSearch, FiUsers, FiCalendar, FiBriefcase,
-  FiMoreHorizontal, FiEdit, FiTrash2, FiEye,
+  FiPlus, FiSearch, FiMail, FiPhone, FiMapPin,
+  FiMoreHorizontal, FiCalendar, FiBriefcase, FiAward,
 } from 'react-icons/fi';
 
-const TEAMS = [
+const TEAM_MEMBERS = [
   {
     id: 1,
-    name: 'Équipe Alpha',
-    description: 'Développement de notre application mobile',
-    membersCount: 4,
-    projectsCount: 3,
-    leader: 'Vous',
-    creationDate: '15 janvier 2023',
-    status: 'active',
-    department: 'Technologie',
-    projects: ['App iOS', 'App Android', 'Dashboard'],
-    isOwner: true,
+    name: 'Jean Dupont',
+    role: 'Lead Developer',
+    email: 'jean.dupont@exemple.com',
+    phone: '+33 6 12 34 56 78',
+    location: 'Paris, France',
+    avatar: 'JD',
+    status: 'online',
+    department: 'Développement',
+    joinDate: '15 janvier 2023',
+    projects: ['API v2', 'App mobile'],
+    skills: ['React', 'Node.js', 'TypeScript'],
+    performance: 92,
   },
   {
     id: 2,
-    name: 'Équipe Marketing Digital',
-    description: 'Campagnes marketing et réseaux sociaux',
-    membersCount: 2,
-    projectsCount: 2,
-    leader: 'Vous',
-    creationDate: '3 mars 2023',
-    status: 'active',
-    department: 'Marketing',
-    projects: ['Site web', 'Réseaux sociaux'],
-    isOwner: true,
+    name: 'Marie Robert',
+    role: 'UX Designer',
+    email: 'marie.robert@exemple.com',
+    phone: '+33 6 23 45 67 89',
+    location: 'Lyon, France',
+    avatar: 'MR',
+    status: 'online',
+    department: 'Design',
+    joinDate: '3 mars 2023',
+    projects: ['Site vitrine', 'Dashboard analytics'],
+    skills: ['Figma', 'Adobe XD', 'Prototyping'],
+    performance: 88,
   },
   {
     id: 3,
-    name: 'Équipe Design UX',
-    description: 'Design interface et expérience utilisateur',
-    membersCount: 3,
-    projectsCount: 1,
-    leader: 'Marie Design',
-    creationDate: '10 juin 2023',
-    status: 'active',
-    department: 'Design',
-    projects: ['Refonte UI'],
-    isOwner: false,
+    name: 'Alice Laurent',
+    role: 'Frontend Developer',
+    email: 'alice.laurent@exemple.com',
+    phone: '+33 6 34 56 78 90',
+    location: 'Marseille, France',
+    avatar: 'AL',
+    status: 'away',
+    department: 'Développement',
+    joinDate: '10 juin 2023',
+    projects: ['App mobile', 'Site vitrine'],
+    skills: ['Vue.js', 'CSS', 'JavaScript'],
+    performance: 85,
+  },
+  {
+    id: 4,
+    name: 'Thomas Bernard',
+    role: 'Backend Developer',
+    email: 'thomas.bernard@exemple.com',
+    phone: '+33 6 45 67 89 01',
+    location: 'Toulouse, France',
+    avatar: 'TB',
+    status: 'offline',
+    department: 'Développement',
+    joinDate: '22 août 2023',
+    projects: ['API v2'],
+    skills: ['Python', 'Django', 'PostgreSQL'],
+    performance: 90,
+  },
+  {
+    id: 5,
+    name: 'Sophie Martin',
+    role: 'Project Manager',
+    email: 'sophie.martin@exemple.com',
+    phone: '+33 6 56 78 90 12',
+    location: 'Bordeaux, France',
+    avatar: 'SM',
+    status: 'online',
+    department: 'Management',
+    joinDate: '5 février 2023',
+    projects: ['Site vitrine', 'App mobile', 'API v2'],
+    skills: ['Agile', 'Scrum', 'Jira'],
+    performance: 94,
   },
 ];
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  active: { label: 'Active', color: '#1d9e75' },
-  inactive: { label: 'Inactive', color: '#f59e0b' },
-  archived: { label: 'Archivée', color: '#6b7280' },
+  online: { label: 'En ligne', color: '#1d9e75' },
+  away: { label: 'Absent', color: '#f59e0b' },
+  offline: { label: 'Hors ligne', color: '#6b7280' },
 };
 
 const fadeUp = (i: number) => ({
@@ -65,37 +101,23 @@ export default function TeamPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setActiveDropdown(null);
-    };
-
-    if (activeDropdown !== null) {
-      document.addEventListener('click', handleClickOutside);
-      return () => {
-        document.removeEventListener('click', handleClickOutside);
-      };
-    }
-  }, [activeDropdown]);
-
-  const filteredTeams = TEAMS.filter(team => {
-    const matchesSearch = team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         team.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         team.leader.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDepartment = departmentFilter === 'all' || team.department === departmentFilter;
-    const matchesStatus = statusFilter === 'all' || team.status === statusFilter;
+  const filteredMembers = TEAM_MEMBERS.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         member.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         member.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDepartment = departmentFilter === 'all' || member.department === departmentFilter;
+    const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
     return matchesSearch && matchesDepartment && matchesStatus;
   });
 
-  const departments = Array.from(new Set(TEAMS.map(t => t.department)));
+  const departments = Array.from(new Set(TEAM_MEMBERS.map(m => m.department)));
   
   const stats = {
-    total: TEAMS.length,
-    active: TEAMS.filter(t => t.status === 'active').length,
-    inactive: TEAMS.filter(t => t.status === 'inactive').length,
-    archived: TEAMS.filter(t => t.status === 'archived').length,
+    total: TEAM_MEMBERS.length,
+    online: TEAM_MEMBERS.filter(m => m.status === 'online').length,
+    away: TEAM_MEMBERS.filter(m => m.status === 'away').length,
+    offline: TEAM_MEMBERS.filter(m => m.status === 'offline').length,
   };
 
   return (
@@ -156,7 +178,7 @@ export default function TeamPage() {
               Équipe
             </h2>
             <p style={{ fontSize: 12.5, color: '#888580', margin: 0 }}>
-              {filteredTeams.length} équipe{filteredTeams.length > 1 ? 's' : ''}
+              {filteredMembers.length} membres trouvés
             </p>
           </div>
           <button className="button-text" style={{
@@ -168,7 +190,7 @@ export default function TeamPage() {
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#333'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1a1a1a'; }}>
             <FiPlus size={14} />
-            Nouvelle équipe
+            Inviter un membre
           </button>
         </div>
 
@@ -176,7 +198,7 @@ export default function TeamPage() {
         <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
           <div style={{ background: '#fff', border: '1px solid #e8e6e1', borderRadius: 12, padding: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <FiUsers size={14} style={{ color: '#c8c6c2' }} />
+              <FiBriefcase size={14} style={{ color: '#c8c6c2' }} />
               <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>Total</span>
             </div>
             <p style={{ fontSize: 24, fontWeight: 500, color: '#1a1a1a', margin: 0, fontFamily: "'DM Mono', monospace" }}>
@@ -187,30 +209,30 @@ export default function TeamPage() {
           <div style={{ background: '#fff', border: '1px solid #e8e6e1', borderRadius: 12, padding: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#1d9e75' }} />
-              <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>Actives</span>
+              <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>En ligne</span>
             </div>
             <p style={{ fontSize: 24, fontWeight: 500, color: '#1a1a1a', margin: 0, fontFamily: "'DM Mono', monospace" }}>
-              {stats.active}
+              {stats.online}
             </p>
           </div>
           
           <div style={{ background: '#fff', border: '1px solid #e8e6e1', borderRadius: 12, padding: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }} />
-              <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>Inactives</span>
+              <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>Absent</span>
             </div>
             <p style={{ fontSize: 24, fontWeight: 500, color: '#1a1a1a', margin: 0, fontFamily: "'DM Mono', monospace" }}>
-              {stats.inactive}
+              {stats.away}
             </p>
           </div>
           
           <div style={{ background: '#fff', border: '1px solid #e8e6e1', borderRadius: 12, padding: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#6b7280' }} />
-              <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>Archivées</span>
+              <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>Hors ligne</span>
             </div>
             <p style={{ fontSize: 24, fontWeight: 500, color: '#1a1a1a', margin: 0, fontFamily: "'DM Mono', monospace" }}>
-              {stats.archived}
+              {stats.offline}
             </p>
           </div>
         </div>
@@ -221,7 +243,7 @@ export default function TeamPage() {
             <FiSearch size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#b0aeaa' }} />
             <input
               type="text"
-              placeholder="Rechercher vos équipes..."
+              placeholder="Rechercher un membre..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -259,34 +281,20 @@ export default function TeamPage() {
             }}
           >
             <option value="all">Tous les statuts</option>
-            <option value="active">Actives</option>
-            <option value="inactive">Inactives</option>
-            <option value="archived">Archivées</option>
-          </select>
-
-          <select
-            value="all"
-            onChange={() => {}}
-            style={{
-              padding: '8px 12px', border: '1px solid #e8e6e1',
-              borderRadius: 8, fontSize: 12.5, color: '#1a1a1a',
-              background: '#fff', cursor: 'pointer',
-            }}
-          >
-            <option value="all">Mes équipes</option>
-            <option value="owned">Créées par moi</option>
-            <option value="member">Membre</option>
+            <option value="online">En ligne</option>
+            <option value="away">Absent</option>
+            <option value="offline">Hors ligne</option>
           </select>
         </div>
       </motion.div>
 
-      {/* Teams grid */}
+      {/* Team members grid */}
       <div className="team-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 16 }}>
-        {filteredTeams.map((team, i) => {
-          const status = statusConfig[team.status];
+        {filteredMembers.map((member, i) => {
+          const status = statusConfig[member.status];
           return (
             <motion.div
-              key={team.id}
+              key={member.id}
               {...fadeUp(i + 1)}
               className="team-card"
               style={{
@@ -305,7 +313,7 @@ export default function TeamPage() {
                       background: '#1a1a1a', display: 'flex', alignItems: 'center',
                       justifyContent: 'center', fontSize: 14, fontWeight: 500, color: '#fff',
                     }}>
-                      <FiUsers size={20} />
+                      {member.avatar}
                     </div>
                     <div style={{
                       position: 'absolute', bottom: 0, right: 0,
@@ -315,125 +323,74 @@ export default function TeamPage() {
                   </div>
                   <div>
                     <h3 style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', margin: '0 0 2px' }}>
-                      {team.name}
+                      {member.name}
                     </h3>
                     <p style={{ fontSize: 12.5, color: '#888580', margin: 0 }}>
-                      {team.department}
+                      {member.role}
                     </p>
                   </div>
                 </div>
-                <div style={{ position: 'relative' }}>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveDropdown(activeDropdown === team.id ? null : team.id);
-                    }}
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#c8c6c2', padding: 4, borderRadius: 4,
-                      transition: 'color 0.15s',
-                    }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}
-                  >
-                    <FiMoreHorizontal size={14} />
-                  </button>
-                  
-                  {activeDropdown === team.id && (
-                    <div style={{
-                      position: 'absolute', right: 0, top: '100%',
-                      background: '#fff', border: '1px solid #e8e6e1',
-                      borderRadius: 8, padding: '4px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                      zIndex: 10, minWidth: 150,
-                    }}>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.location.href = `/dashboard/team/viewTeam/${team.id}`;
-                        }}
-                        style={{
-                          width: '100%', padding: '8px 12px', border: 'none',
-                          background: 'none', textAlign: 'left', cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', gap: 8,
-                          fontSize: 12.5, color: '#1a1a1a',
-                          borderRadius: 4,
-                        }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f4f1'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
-                      >
-                        <FiEye size={12} />
-                        Voir l'équipe
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // TODO: Implement edit functionality
-                          console.log('Edit team:', team.id);
-                        }}
-                        style={{
-                          width: '100%', padding: '8px 12px', border: 'none',
-                          background: 'none', textAlign: 'left', cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', gap: 8,
-                          fontSize: 12.5, color: '#1a1a1a',
-                          borderRadius: 4,
-                        }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f4f1'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
-                      >
-                        <FiEdit size={12} />
-                        Modifier
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // TODO: Implement delete functionality
-                          console.log('Delete team:', team.id);
-                        }}
-                        style={{
-                          width: '100%', padding: '8px 12px', border: 'none',
-                          background: 'none', textAlign: 'left', cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', gap: 8,
-                          fontSize: 12.5, color: '#dc2626',
-                          borderRadius: 4,
-                        }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fef2f2'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
-                      >
-                        <FiTrash2 size={12} />
-                        Supprimer
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ marginBottom: 16 }}>
-                <p style={{ fontSize: 12, color: '#888580', margin: '0 0 8px', lineHeight: 1.4 }}>
-                  {team.description}
-                </p>
+                <button style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: '#c8c6c2', padding: 4, borderRadius: 4,
+                  transition: 'color 0.15s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}>
+                  <FiMoreHorizontal size={14} />
+                </button>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <FiUsers size={12} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 11.5, color: '#888580' }}>{team.membersCount} membres</span>
+                  <FiMail size={12} style={{ color: '#b0aeaa' }} />
+                  <span style={{ fontSize: 11.5, color: '#888580' }}>{member.email}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <FiBriefcase size={12} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 11.5, color: '#888580' }}>{team.projectsCount} projets</span>
+                  <FiPhone size={12} style={{ color: '#b0aeaa' }} />
+                  <span style={{ fontSize: 11.5, color: '#888580' }}>{member.phone}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <FiUsers size={12} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 11.5, color: '#888580' }}>Responsable: {team.leader}</span>
+                  <FiMapPin size={12} style={{ color: '#b0aeaa' }} />
+                  <span style={{ fontSize: 11.5, color: '#888580' }}>{member.location}</span>
                 </div>
               </div>
 
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>Performance</span>
+                  <span style={{ fontSize: 11.5, color: '#1a1a1a', fontFamily: "'DM Mono', monospace" }}>
+                    {member.performance}%
+                  </span>
+                </div>
+                <div style={{ height: 4, background: '#f0efeb', borderRadius: 2 }}>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${member.performance}%` }}
+                    transition={{ delay: 0.3 + i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ height: '100%', background: member.performance >= 90 ? '#1d9e75' : member.performance >= 80 ? '#f59e0b' : '#dc2626', borderRadius: 2 }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <span style={{ fontSize: 11.5, color: '#b0aeaa', display: 'block', marginBottom: 6 }}>Compétences</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {member.skills.map((skill, idx) => (
+                    <span key={idx} style={{
+                      fontSize: 10.5, padding: '3px 8px', borderRadius: 4,
+                      background: '#f5f4f1', color: '#888580',
+                    }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f0efeb' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <FiCalendar size={12} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 11, color: '#888580' }}>{team.creationDate}</span>
+                  <span style={{ fontSize: 11, color: '#888580' }}>{member.joinDate}</span>
                 </div>
                 <span style={{
                   fontSize: 10.5, padding: '2px 6px', borderRadius: 4,
