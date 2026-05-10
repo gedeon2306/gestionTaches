@@ -15,6 +15,7 @@ export const ROUTES = {
     PROJECTS: '/dashboard/projects',
     CALENDAR: '/dashboard/calendar',
     TEAM: '/dashboard/team',
+    VIEWTEAM: '/dashboard/team/viewTeam',
     SETTINGS: '/dashboard/settings',
     PROFIL: '/dashboard/profil',
   },
