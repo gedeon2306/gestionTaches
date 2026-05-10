@@ -2,8 +2,14 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { FiBell, FiX, FiMaximize, FiMinimize, FiLogOut, FiSun, FiMoon } from 'react-icons/fi';
+import { FiBell, FiMaximize, FiMinimize, FiLogOut, FiSun, FiMoon } from 'react-icons/fi';
+import { Spinner } from '@/src/components/auth';
 
+interface NavbarProps {
+  title?: string;
+  onLogout: () => void;
+  isLogout: boolean;
+}
 
 const NOTIFS = [
   { text: 'Marie a commenté une tâche', time: 'il y a 5 min', dot: true },
@@ -40,7 +46,7 @@ const IconBtn = ({
   </button>
 );
 
-export default function Navbar({ title = "Vue d'ensemble" }: { title?: string }) {
+export default function Navbar({ title = "Vue d'ensemble", onLogout, isLogout }: NavbarProps) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -149,25 +155,26 @@ export default function Navbar({ title = "Vue d'ensemble" }: { title?: string })
         {/* Logout */}
         <button
           title="Se déconnecter"
-          onClick={() => { /* handle logout */ }}
+          disabled={isLogout}
+          onClick={onLogout}
           style={{
             width: 32, height: 32, display: 'flex', alignItems: 'center',
             justifyContent: 'center', background: 'none', border: '1px solid #e8e6e1',
-            borderRadius: 8, cursor: 'pointer', color: '#888580',
+            borderRadius: 8, cursor: 'pointer', color: '#F40B10',
             transition: 'all 0.15s', flexShrink: 0,
           }}
           onMouseEnter={e => {
             (e.currentTarget as HTMLButtonElement).style.background = '#fff0f0';
             (e.currentTarget as HTMLButtonElement).style.borderColor = '#fcd0d0';
-            (e.currentTarget as HTMLButtonElement).style.color = '#c0392b';
+            (e.currentTarget as HTMLButtonElement).style.color = '#F40B10';
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLButtonElement).style.background = 'none';
             (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e6e1';
-            (e.currentTarget as HTMLButtonElement).style.color = '#888580';
+            (e.currentTarget as HTMLButtonElement).style.color = '#F40B10';
           }}
         >
-          <FiLogOut size={13} />
+          {isLogout ? <Spinner color="#F40B10" /> : <FiLogOut size={13} />}
         </button>
       </div>
     </header>

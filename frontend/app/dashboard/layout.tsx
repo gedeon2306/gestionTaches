@@ -6,19 +6,26 @@ import DashboardSkeleton from '@/src/components/uxComponents/DashboardSkeleton';
 import { useSession, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { ROUTES } from '@/src/constants/routes';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [isLogout, setIsLogout] = useState(false)
 
   // Redirige si non connecté
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/login")
+      router.push(ROUTES.AUTH.LOGIN)
     }
   }, [status])
 
   if (status === "loading") return <DashboardSkeleton />
+
+  const handleLogout = async () => {
+    setIsLogout(true)
+    signOut({ callbackUrl: ROUTES.AUTH.LOGIN })
+  }
   
   return (
     <div style={{
@@ -30,7 +37,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }}>
       <Sidebar />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
-        <Navbar />
+        <Navbar 
+          onLogout={handleLogout}
+          isLogout={isLogout}
+        />
         <main style={{
           flex: 1,
           overflowY: 'auto',
