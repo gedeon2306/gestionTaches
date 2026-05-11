@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion } from 'motion/react';
 import {
   FiPlus, FiSearch, FiUsers, FiCalendar, FiBriefcase,
   FiMoreHorizontal, FiEdit, FiTrash2, FiEye,
 } from 'react-icons/fi';
+import { ROUTES } from '@/src/constants/routes';
 
 const TEAMS = [
   {
@@ -63,7 +65,6 @@ const fadeUp = (i: number) => ({
 
 export default function TeamPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
 
@@ -84,12 +85,10 @@ export default function TeamPage() {
     const matchesSearch = team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          team.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          team.leader.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDepartment = departmentFilter === 'all' || team.department === departmentFilter;
     const matchesStatus = statusFilter === 'all' || team.status === statusFilter;
-    return matchesSearch && matchesDepartment && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
 
-  const departments = Array.from(new Set(TEAMS.map(t => t.department)));
   
   const stats = {
     total: TEAMS.length,
@@ -234,20 +233,6 @@ export default function TeamPage() {
             />
           </div>
           
-          <select
-            value={departmentFilter}
-            onChange={(e) => setDepartmentFilter(e.target.value)}
-            style={{
-              padding: '8px 12px', border: '1px solid #e8e6e1',
-              borderRadius: 8, fontSize: 12.5, color: '#1a1a1a',
-              background: '#fff', cursor: 'pointer',
-            }}
-          >
-            <option value="all">Tous les départements</option>
-            {departments.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
-            ))}
-          </select>
 
           <select
             value={statusFilter}
@@ -347,24 +332,25 @@ export default function TeamPage() {
                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                       zIndex: 10, minWidth: 150,
                     }}>
-                      <button
+                      <Link
+                        href={ROUTES.DASHBOARD.VIEWTEAM}
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = `/dashboard/team/viewTeam/${team.id}`;
+                          setActiveDropdown(null);
                         }}
                         style={{
                           width: '100%', padding: '8px 12px', border: 'none',
                           background: 'none', textAlign: 'left', cursor: 'pointer',
                           display: 'flex', alignItems: 'center', gap: 8,
                           fontSize: 12.5, color: '#1a1a1a',
-                          borderRadius: 4,
+                          borderRadius: 4, textDecoration: 'none',
                         }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f4f1'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#f5f4f1'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'none'; }}
                       >
                         <FiEye size={12} />
                         Voir l'équipe
-                      </button>
+                      </Link>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
