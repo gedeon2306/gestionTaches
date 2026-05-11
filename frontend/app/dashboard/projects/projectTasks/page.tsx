@@ -39,23 +39,8 @@ export default function TasksPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [tasks, setTasks] = useState(TASKS);
+  const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
 
-  const toggleTaskStatus = (taskId: number) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => {
-        if (task.id === taskId) {
-          if (task.status === 'done') {
-            return { ...task, status: 'todo' };
-          } else if (task.status === 'todo') {
-            return { ...task, status: 'inprogress' };
-          } else {
-            return { ...task, status: 'done' };
-          }
-        }
-        return task;
-      })
-    );
-  };
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -119,12 +104,23 @@ export default function TasksPage() {
         <div className="header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <h2 className="header-text" style={{ fontSize: 20, fontWeight: 500, color: '#1a1a1a', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
-              Mes tâches
+              Tâches du projet ...
             </h2>
             <p style={{ fontSize: 12.5, color: '#888580', margin: 0 }}>
               {tasks.length} tâches trouvées
             </p>
           </div>
+          <button className="button-text" style={{
+            background: '#1a1a1a', color: '#fff', border: 'none',
+            borderRadius: 8, padding: '8px 16px', fontSize: 12.5,
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#333'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1a1a1a'; }}>
+            <FiPlus size={14} />
+            Nouvelle tâche
+          </button>
         </div>
 
         {/* Search and filters */}
@@ -202,20 +198,15 @@ export default function TasksPage() {
               onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <button 
-                  onClick={() => toggleTaskStatus(task.id)}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    padding: 0, marginTop: 2, transition: 'transform 0.15s',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}
-                >
+                <div style={{
+                  width: 16, height: 16, marginTop: 2,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
                   {task.status === 'done'
                     ? <FiCheckCircle size={16} style={{ color: '#1d9e75' }} />
                     : <FiCircle size={16} style={{ color: '#d8d6d2' }} />
                   }
-                </button>
+                </div>
                 
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
@@ -230,15 +221,83 @@ export default function TasksPage() {
                         {task.description}
                       </p>
                     </div>
-                    <button style={{
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#c8c6c2', padding: 4, borderRadius: 4,
-                      transition: 'color 0.15s',
-                    }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}>
-                      <FiMoreHorizontal size={14} />
-                    </button>
+                    <div style={{ position: 'relative' }}>
+                      <button 
+                        onClick={() => setDropdownOpen(dropdownOpen === task.id ? null : task.id)}
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          color: '#c8c6c2', padding: 4, borderRadius: 4,
+                          transition: 'color 0.15s',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}>
+                        <FiMoreHorizontal size={14} />
+                      </button>
+                      
+                      {dropdownOpen === task.id && (
+                        <div style={{
+                          position: 'absolute',
+                          right: 0,
+                          top: '100%',
+                          marginTop: 4,
+                          background: '#fff',
+                          border: '1px solid #e8e6e1',
+                          borderRadius: 8,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                          zIndex: 1000,
+                          minWidth: 120,
+                        }}>
+                          <button
+                            onClick={() => {
+                              console.log('Modifier tâche:', task.id);
+                              setDropdownOpen(null);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '8px 12px',
+                              border: 'none',
+                              background: 'none',
+                              textAlign: 'left',
+                              fontSize: 12.5,
+                              color: '#1a1a1a',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              borderRadius: '8px 8px 0 0',
+                            }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fafaf9'; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}>
+                            <FiEdit2 size={12} />
+                            Modifier
+                          </button>
+                          <button
+                            onClick={() => {
+                              console.log('Supprimer tâche:', task.id);
+                              setDropdownOpen(null);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '8px 12px',
+                              border: 'none',
+                              background: 'none',
+                              textAlign: 'left',
+                              fontSize: 12.5,
+                              color: '#dc2626',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              borderRadius: '0 0 8px 8px',
+                            }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fafaf9'; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}>
+                            <FiTrash2 size={12} />
+                            Supprimer
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   
                   <div className="task-meta-mobile" style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>

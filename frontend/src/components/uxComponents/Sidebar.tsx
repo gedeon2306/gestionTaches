@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { icon: FiInbox,       label: 'Mes tâches',      href: ROUTES.DASHBOARD.TASKS },
   { icon: FiFolder,      label: 'Projets',          href: ROUTES.DASHBOARD.PROJECTS },
   { icon: FiCalendar,    label: 'Calendrier',       href: ROUTES.DASHBOARD.CALENDAR },
-  { icon: FiUsers,       label: 'Équipe',           href: ROUTES.DASHBOARD.TEAM },
+  { icon: FiUsers,       label: 'Équipe',           href: ROUTES.DASHBOARD.TEAMS },
 ];
 
 const PROJECTS = [

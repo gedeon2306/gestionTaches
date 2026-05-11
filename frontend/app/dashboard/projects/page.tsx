@@ -352,7 +352,7 @@ export default function ProjectsPage() {
                         }}
                       >
                         <Link
-                          href={ROUTES.DASHBOARD.TASKS}
+                          href={ROUTES.DASHBOARD.PROJECT_TASKS}
                           onClick={(e) => {
                             e.stopPropagation();
                             setActiveMenu(null);
