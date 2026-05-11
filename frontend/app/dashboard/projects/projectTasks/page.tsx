@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
+import Link from 'next/link';
 import {
   FiPlus, FiFilter, FiSearch, FiCheckCircle, FiCircle,
   FiCalendar, FiUser, FiMoreHorizontal, FiEdit2, FiTrash2,
 } from 'react-icons/fi';
+import { ROUTES } from '@/src/constants/routes';
 
 const TASKS = [
   { id: 1, title: 'Finaliser la maquette landing page', project: 'Site vitrine', status: 'done', priority: 'haute', assignee: 'MR', due: 'Aujourd\'hui', description: 'Finaliser les derniers détails de la maquette' },
@@ -101,6 +103,37 @@ export default function TasksPage() {
 
       {/* Header */}
       <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+        {/* Breadcrumb */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <Link 
+            href={ROUTES.DASHBOARD.ROOT}
+            style={{
+              color: '#888580', textDecoration: 'none',
+              fontSize: 12.5, transition: 'color 0.15s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
+          >
+            Dashboard
+          </Link>
+          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
+          <Link 
+            href={ROUTES.DASHBOARD.PROJECTS}
+            style={{
+              color: '#888580', textDecoration: 'none',
+              fontSize: 12.5, transition: 'color 0.15s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
+          >
+            Projets
+          </Link>
+          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
+          <span style={{ color: '#1a1a1a', fontSize: 12.5, fontWeight: 500 }}>
+            Tâches du projet
+          </span>
+        </nav>
+
         <div className="header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <h2 className="header-text" style={{ fontSize: 20, fontWeight: 500, color: '#1a1a1a', margin: '0 0 4px', letterSpacing: '-0.02em' }}>

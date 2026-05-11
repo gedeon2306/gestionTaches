@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
+import Link from 'next/link';
 import {
   FiPlus, FiSearch, FiMail, FiPhone, FiMapPin,
   FiMoreHorizontal, FiCalendar, FiBriefcase, FiAward,
+  FiUser, FiChevronDown,
 } from 'react-icons/fi';
+import { ROUTES } from '@/src/constants/routes';
 
 const TEAM_MEMBERS = [
   {
@@ -100,6 +103,8 @@ const fadeUp = (i: number) => ({
 export default function TeamPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const dropdownRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const filteredMembers = TEAM_MEMBERS.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -108,6 +113,22 @@ export default function TeamPage() {
     const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (activeDropdown !== null) {
+        const dropdown = dropdownRefs.current[activeDropdown];
+        if (dropdown && !dropdown.contains(event.target as Node)) {
+          setActiveDropdown(null);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeDropdown]);
 
   
   const stats = {
@@ -169,6 +190,37 @@ export default function TeamPage() {
 
       {/* Header */}
       <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+        {/* Breadcrumb */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <Link 
+            href={ROUTES.DASHBOARD.ROOT}
+            style={{
+              color: '#888580', textDecoration: 'none',
+              fontSize: 12.5, transition: 'color 0.15s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
+          >
+            Dashboard
+          </Link>
+          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
+          <Link 
+            href={ROUTES.DASHBOARD.TEAMS}
+            style={{
+              color: '#888580', textDecoration: 'none',
+              fontSize: 12.5, transition: 'color 0.15s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
+          >
+            Équipes
+          </Link>
+          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
+          <span style={{ color: '#1a1a1a', fontSize: 12.5, fontWeight: 500 }}>
+            Équipe Design UX
+          </span>
+        </nav>
+
         <div className="header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <h2 className="header-text" style={{ fontSize: 20, fontWeight: 500, color: '#1a1a1a', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
@@ -313,15 +365,65 @@ export default function TeamPage() {
                     </p>
                   </div>
                 </div>
-                <button style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  color: '#c8c6c2', padding: 4, borderRadius: 4,
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}>
-                  <FiMoreHorizontal size={14} />
-                </button>
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    onClick={() => setActiveDropdown(activeDropdown === member.id ? null : member.id)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: '#c8c6c2', padding: 4, borderRadius: 4,
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}>
+                    <FiMoreHorizontal size={14} />
+                  </button>
+                  
+                  {activeDropdown === member.id && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.15 }}
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        right: 0,
+                        marginTop: 4,
+                        background: '#fff',
+                        border: '1px solid #e8e6e1',
+                        borderRadius: 8,
+                        padding: '4px 0',
+                        minWidth: 160,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                        zIndex: 50,
+                      }}
+                    >
+                      <Link
+                        href={ROUTES.DASHBOARD.VIEWMEMBER}
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          background: 'none',
+                          border: 'none',
+                          textAlign: 'left',
+                          fontSize: 12.5,
+                          color: '#1a1a1a',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          transition: 'background 0.15s',
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#fafaf9'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'none'; }}
+                        onClick={() => setActiveDropdown(null)}
+                      >
+                        <FiUser size={12} style={{ color: '#888580' }} />
+                        Voir le profil
+                      </Link>
+                    </motion.div>
+                  )}
+                </div>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
