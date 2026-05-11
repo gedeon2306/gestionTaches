@@ -17,6 +17,7 @@ export const ROUTES = {
     CALENDAR: '/dashboard/calendar',
     TEAMS: '/dashboard/teams',
     VIEWTEAM: '/dashboard/teams/viewTeam',
+    VIEWMEMBER: '/dashboard/teams/viewTeam/viewMember',
     SETTINGS: '/dashboard/settings',
     PROFIL: '/dashboard/profil',
   },
