@@ -99,19 +99,16 @@ const fadeUp = (i: number) => ({
 
 export default function TeamPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
   const filteredMembers = TEAM_MEMBERS.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDepartment = departmentFilter === 'all' || member.department === departmentFilter;
     const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
-    return matchesSearch && matchesDepartment && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
 
-  const departments = Array.from(new Set(TEAM_MEMBERS.map(m => m.department)));
   
   const stats = {
     total: TEAM_MEMBERS.length,
@@ -256,20 +253,6 @@ export default function TeamPage() {
             />
           </div>
           
-          <select
-            value={departmentFilter}
-            onChange={(e) => setDepartmentFilter(e.target.value)}
-            style={{
-              padding: '8px 12px', border: '1px solid #e8e6e1',
-              borderRadius: 8, fontSize: 12.5, color: '#1a1a1a',
-              background: '#fff', cursor: 'pointer',
-            }}
-          >
-            <option value="all">Tous les départements</option>
-            {departments.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
-            ))}
-          </select>
 
           <select
             value={statusFilter}

@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   FiPlus, FiSearch, FiMoreHorizontal, FiFolder, FiCalendar,
   FiUser, FiTrendingUp, FiClock, FiCheckCircle, FiEye,
   FiEdit2, FiTrash2,
 } from 'react-icons/fi';
+import { ROUTES } from '@/src/constants/routes';
 
 const PROJECTS = [
   {
@@ -349,8 +351,12 @@ export default function ProjectsPage() {
                           zIndex: 50,
                         }}
                       >
-                        <button
-                          onClick={() => handleMenuClick(project.id, 'view-tasks')}
+                        <Link
+                          href={ROUTES.DASHBOARD.TASKS}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMenu(null);
+                          }}
                           style={{
                             width: '100%',
                             padding: '10px 12px',
@@ -364,15 +370,14 @@ export default function ProjectsPage() {
                             alignItems: 'center',
                             gap: 8,
                             transition: 'background 0.12s',
+                            textDecoration: 'none',
                           }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f4f1'; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#f5f4f1'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; }}
                         >
                           <FiEye size={13} style={{ color: '#888580' }} />
                           Voir les tâches
-                        </button>
-                        
-                        <div style={{ height: 1, background: '#f0efeb' }} />
+                        </Link>
                         
                         <button
                           onClick={() => handleMenuClick(project.id, 'edit')}
