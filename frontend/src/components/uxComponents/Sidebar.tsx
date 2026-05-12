@@ -7,22 +7,17 @@ import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import {
   FiGrid, FiFolder, FiCalendar,
-  FiUsers, FiSettings, FiChevronLeft, FiPlus, FiInbox,
+  FiUsers, FiSettings, FiChevronLeft, FiInbox, FiFilter,
 } from 'react-icons/fi';
-import { ROUTES } from '../../constants/routes';
+import { ROUTES } from '@/src/constants/routes';
 
 const NAV_ITEMS = [
-  { icon: FiGrid,        label: 'Vue d\'ensemble', href: ROUTES.DASHBOARD.ROOT },
-  { icon: FiInbox,       label: 'Mes tâches',      href: ROUTES.DASHBOARD.TASKS },
-  { icon: FiFolder,      label: 'Projets',          href: ROUTES.DASHBOARD.PROJECTS },
-  { icon: FiCalendar,    label: 'Calendrier',       href: ROUTES.DASHBOARD.CALENDAR },
-  { icon: FiUsers,       label: 'Équipe',           href: ROUTES.DASHBOARD.TEAMS },
-];
-
-const PROJECTS = [
-  { name: 'Site vitrine', color: '#1a1a1a' },
-  { name: 'App mobile',   color: '#888580' },
-  { name: 'API v2',       color: '#b0aeaa' },
+  { icon: FiGrid, label: 'Vue d\'ensemble', href: ROUTES.DASHBOARD.ROOT },
+  { icon: FiInbox, label: 'Mes tâches', href: ROUTES.DASHBOARD.TASKS },
+  { icon: FiFolder, label: 'Projets', href: ROUTES.DASHBOARD.PROJECTS },
+  { icon: FiCalendar, label: 'Calendrier', href: ROUTES.DASHBOARD.CALENDAR },
+  { icon: FiUsers, label: 'Équipe', href: ROUTES.DASHBOARD.TEAMS },
+  { icon: FiFilter, label: 'Rechercher', href: ROUTES.DASHBOARD.SEARCH_USERS },
 ];
 
 export default function Sidebar() {
@@ -167,45 +162,6 @@ export default function Sidebar() {
             </Link>
           );
         })}
-
-        {/* Projects section */}
-        {!collapsed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{ marginTop: 20 }}
-          >
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '0 10px', marginBottom: 6,
-            }}>
-              <span style={{ fontSize: 10.5, fontWeight: 500, color: '#b0aeaa', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                Projets
-              </span>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b0aeaa', display: 'flex', padding: 2 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#b0aeaa'; }}>
-                <FiPlus size={12} />
-              </button>
-            </div>
-            {PROJECTS.map(p => (
-              <Link key={p.name} href="#" style={{ textDecoration: 'none', display: 'block', marginBottom: 1 }}>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '7px 10px', borderRadius: 8, fontSize: 12.5,
-                  color: '#888580', transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = '#f9f8f7'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
-                >
-                  <div style={{ width: 7, height: 7, borderRadius: 2, background: p.color, flexShrink: 0 }} />
-                  <span>{p.name}</span>
-                </div>
-              </Link>
-            ))}
-          </motion.div>
-        )}
       </nav>
 
       {/* Settings */}
