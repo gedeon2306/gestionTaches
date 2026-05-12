@@ -54,6 +54,11 @@ export const getSearchUsersBreadcrumb = (): BreadcrumbItem[] => [
   { label: 'Recherche', href: ROUTES.DASHBOARD.SEARCH_USERS },
 ];
 
+export const getProjectsBreadcrumb = (): BreadcrumbItem[] => [
+  { label: 'Dashboard', href: ROUTES.DASHBOARD.ROOT },
+  { label: 'Projets', href: ROUTES.DASHBOARD.PROJECTS },
+];
+
 export const getTeamsBreadcrumb = (teamName?: string): BreadcrumbItem[] => [
   { label: 'Dashboard', href: ROUTES.DASHBOARD.ROOT },
   { label: 'Équipes', href: ROUTES.DASHBOARD.TEAMS },
