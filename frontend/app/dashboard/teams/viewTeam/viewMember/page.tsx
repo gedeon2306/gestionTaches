@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import {
   FiUser, FiMail, FiPhone, FiMapPin, FiCalendar,
   FiBriefcase, FiAward, FiTrendingUp, FiClock,
@@ -11,7 +10,7 @@ import {
   FiLinkedin, FiTwitter, FiGlobe, FiTarget,
   FiActivity, FiBarChart2, FiZap,
 } from 'react-icons/fi';
-import { ROUTES } from '@/src/constants/routes';
+import Breadcrumb, { getSearchUsersBreadcrumb, getTeamsBreadcrumb } from '@/src/components/uxComponents/Breadcrumb';
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   active: { label: 'Actif', color: '#1d9e75' },
@@ -36,6 +35,22 @@ const fadeUp = (i: number) => ({
 
 export default function ViewMemberPage() {
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // Détecter la page d'origine via le referrer ou le localStorage
+  const [originPage, setOriginPage] = useState<'teams' | 'search'>('teams');
+  
+  useEffect(() => {
+    // Vérifier si on vient de la page SearchUsers
+    if (typeof window !== 'undefined') {
+      const referrer = document.referrer;
+      const searchOrigin = sessionStorage.getItem('searchUsersOrigin');
+      
+      if (referrer.includes('SearchUsers') || searchOrigin === 'true') {
+        setOriginPage('search');
+        sessionStorage.removeItem('searchUsersOrigin');
+      }
+    }
+  }, []);
 
   // Mock member data
   const member = {
@@ -235,47 +250,10 @@ export default function ViewMemberPage() {
       {/* Header */}
       <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
         {/* Breadcrumb */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <Link 
-            href={ROUTES.DASHBOARD.ROOT}
-            style={{
-              color: '#888580', textDecoration: 'none',
-              fontSize: 12.5, transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
-          >
-            Dashboard
-          </Link>
-          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
-          <Link 
-            href={ROUTES.DASHBOARD.TEAMS}
-            style={{
-              color: '#888580', textDecoration: 'none',
-              fontSize: 12.5, transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
-          >
-            Équipes
-          </Link>
-          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
-          <Link 
-            href={ROUTES.DASHBOARD.VIEWTEAM}
-            style={{
-              color: '#888580', textDecoration: 'none',
-              fontSize: 12.5, transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
-          >
-            {member.team}
-          </Link>
-          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
-          <span style={{ color: '#1a1a1a', fontSize: 12.5, fontWeight: 500 }}>
-            {member.firstName} {member.lastName}
-          </span>
-        </nav>
+        <Breadcrumb 
+          items={originPage === 'search' ? getSearchUsersBreadcrumb() : getTeamsBreadcrumb(member.team)}
+          currentPage={`${member.firstName} ${member.lastName}`}
+        />
 
         <div>
           <h2 className="header-text" style={{ fontSize: 20, fontWeight: 500, color: '#1a1a1a', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
