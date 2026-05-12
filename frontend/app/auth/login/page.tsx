@@ -1,13 +1,19 @@
 'use client';
 
 import { signIn } from "next-auth/react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { FiArrowRight } from 'react-icons/fi';
 import { AuthLayout, OAuthButtons, FormField, Spinner } from '@/src/components/auth';
+import AuthSkeleton from '@/src/components/uxComponents/AuthSkeleton';
+import { useSession } from 'next-auth/react';
+import { ROUTES } from '@/src/constants/routes';
 
 export default function LoginPage() {
+  const { status } = useSession();
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingGithub, setLoadingGithub] = useState(false);
@@ -16,7 +22,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push(ROUTES.DASHBOARD.ROOT);
+    }
+  }, [status]);
+  
+  if (status === "loading") return <AuthSkeleton />;
 
   const handleOAuth = (provider: 'google' | 'github') => {
     if (provider === 'google') {
