@@ -20,5 +20,6 @@ export const ROUTES = {
     VIEWMEMBER: '/dashboard/teams/viewTeam/viewMember',
     SETTINGS: '/dashboard/settings',
     PROFIL: '/dashboard/profil',
+    SEARCH_USERS: '/dashboard/searchUsers',
   },
 } as const;

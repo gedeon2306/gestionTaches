@@ -1,131 +1,137 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion } from 'motion/react';
 import {
-  FiPlus, FiSearch, FiMail, FiPhone, FiMapPin,
-  FiMoreHorizontal, FiCalendar, FiBriefcase,
-  FiUser, FiGithub, FiLinkedin,
-  FiGlobe, FiStar, FiUsers,
+  FiSearch, FiUser, FiMail, FiMapPin, FiBriefcase,
+  FiMoreHorizontal, FiPlus, FiCalendar,
+  FiUsers, FiChevronLeft, FiChevronRight,
+  FiGithub, FiLinkedin, FiGlobe, FiStar,
 } from 'react-icons/fi';
 import { ROUTES } from '@/src/constants/routes';
 
-const TEAM_MEMBERS = [
+// Mock data pour les utilisateurs
+const USERS = [
   {
     id: 1,
-    firstName: 'Jean',
-    lastName: 'Dupont',
-    name: 'Jean Dupont',
-    title: 'Développeur Full Stack Senior',
-    role: 'Senior Developer',
-    email: 'jean.dupont@exemple.com',
-    phone: '+33 6 12 34 56 78',
-    location: 'Paris, France',
-    avatar: 'JD',
+    firstName: 'Marie',
+    lastName: 'Design',
+    email: 'marie.design@exemple.com',
+    title: 'UX/UI Designer Lead',
+    department: 'Design',
+    team: 'Équipe Design UX',
+    location: 'Lyon, France',
+    avatar: 'MD',
+    joinDate: '10 juin 2023',
     status: 'active',
+    role: 'Lead Designer',
+    projects: 18,
+    skills: ['Figma', 'Adobe XD', 'Sketch', 'Design Systems'],
+    github: 'mariedesign',
+    linkedin: 'marie-design',
+    website: 'https://mariedesign.dev',
+    rating: 4.8,
+  },
+  {
+    id: 2,
+    firstName: 'Jean',
+    lastName: 'Développeur',
+    email: 'jean.dev@exemple.com',
+    title: 'Développeur Full Stack Senior',
     department: 'Technologie',
     team: 'Équipe Alpha',
+    location: 'Paris, France',
+    avatar: 'JD',
     joinDate: '15 janvier 2023',
+    status: 'active',
+    role: 'Senior Developer',
     projects: 24,
     skills: ['React', 'Node.js', 'TypeScript', 'MongoDB'],
     github: 'jeandev',
     linkedin: 'jean-developpeur',
     website: 'https://jeandev.dev',
     rating: 4.9,
-    performance: 92,
-  },
-  {
-    id: 2,
-    firstName: 'Marie',
-    lastName: 'Robert',
-    name: 'Marie Robert',
-    title: 'UX/UI Designer Lead',
-    role: 'Lead Designer',
-    email: 'marie.robert@exemple.com',
-    phone: '+33 6 23 45 67 89',
-    location: 'Lyon, France',
-    avatar: 'MR',
-    status: 'active',
-    department: 'Design',
-    team: 'Équipe Design UX',
-    joinDate: '3 mars 2023',
-    projects: 18,
-    skills: ['Figma', 'Adobe XD', 'Sketch', 'Design Systems'],
-    github: 'marierobert',
-    linkedin: 'marie-robert',
-    website: 'https://marierobert.dev',
-    rating: 4.8,
-    performance: 88,
   },
   {
     id: 3,
-    firstName: 'Alice',
-    lastName: 'Laurent',
-    name: 'Alice Laurent',
-    title: 'Développeur Frontend',
-    role: 'Frontend Developer',
-    email: 'alice.laurent@exemple.com',
-    phone: '+33 6 34 56 78 90',
+    firstName: 'Sophie',
+    lastName: 'Marketing',
+    email: 'sophie.marketing@exemple.com',
+    title: 'Responsable Marketing Digital',
+    department: 'Marketing',
+    team: 'Équipe Marketing Digital',
     location: 'Marseille, France',
-    avatar: 'AL',
-    status: 'inactive',
-    department: 'Technologie',
-    team: 'Équipe Alpha',
-    joinDate: '10 juin 2023',
-    projects: 10,
-    skills: ['Vue.js', 'React', 'CSS', 'JavaScript'],
-    github: 'alicelaurent',
-    linkedin: 'alice-laurent',
+    avatar: 'SM',
+    joinDate: '3 mars 2023',
+    status: 'active',
+    role: 'Marketing Manager',
+    projects: 12,
+    skills: ['SEO', 'Google Ads', 'Social Media', 'Analytics'],
+    github: null,
+    linkedin: 'sophie-marketing',
     website: null,
-    rating: 4.4,
-    performance: 85,
+    rating: 4.6,
   },
   {
     id: 4,
-    firstName: 'Thomas',
-    lastName: 'Bernard',
-    name: 'Thomas Bernard',
+    firstName: 'Pierre',
+    lastName: 'Backend',
+    email: 'pierre.backend@exemple.com',
     title: 'Développeur Backend',
-    role: 'Backend Developer',
-    email: 'thomas.bernard@exemple.com',
-    phone: '+33 6 45 67 89 01',
-    location: 'Toulouse, France',
-    avatar: 'TB',
-    status: 'active',
     department: 'Technologie',
     team: 'Équipe Alpha',
-    joinDate: '22 août 2023',
+    location: 'Lille, France',
+    avatar: 'PB',
+    joinDate: '20 février 2023',
+    status: 'active',
+    role: 'Backend Developer',
     projects: 15,
     skills: ['Python', 'Django', 'PostgreSQL', 'Docker'],
-    github: 'thomasbernard',
-    linkedin: 'thomas-bernard',
+    github: 'pierrebackend',
+    linkedin: 'pierre-backend',
     website: null,
     rating: 4.7,
-    performance: 90,
   },
   {
     id: 5,
-    firstName: 'Sophie',
-    lastName: 'Martin',
-    name: 'Sophie Martin',
+    firstName: 'Claire',
+    lastName: 'Product',
+    email: 'claire.product@exemple.com',
     title: 'Product Manager',
-    role: 'Product Manager',
-    email: 'sophie.martin@exemple.com',
-    phone: '+33 6 56 78 90 12',
-    location: 'Bordeaux, France',
-    avatar: 'SM',
-    status: 'active',
     department: 'Produit',
     team: 'Équipe Produit',
-    joinDate: '5 février 2023',
+    location: 'Bordeaux, France',
+    avatar: 'CP',
+    joinDate: '5 avril 2023',
+    status: 'inactive',
+    role: 'Product Manager',
     projects: 8,
     skills: ['Product Strategy', 'Agile', 'User Research', 'Analytics'],
     github: null,
-    linkedin: 'sophie-martin',
+    linkedin: 'claire-product',
     website: null,
     rating: 4.5,
-    performance: 94,
+  },
+  {
+    id: 6,
+    firstName: 'Thomas',
+    lastName: 'Frontend',
+    email: 'thomas.frontend@exemple.com',
+    title: 'Développeur Frontend',
+    department: 'Technologie',
+    team: 'Équipe Alpha',
+    location: 'Nantes, France',
+    avatar: 'TF',
+    joinDate: '12 mai 2023',
+    status: 'active',
+    role: 'Frontend Developer',
+    projects: 10,
+    skills: ['Vue.js', 'React', 'CSS', 'JavaScript'],
+    github: 'thomasfrontend',
+    linkedin: 'thomas-frontend',
+    website: 'https://thomasfrontend.dev',
+    rating: 4.4,
   },
 ];
 
@@ -150,47 +156,58 @@ const fadeUp = (i: number) => ({
   transition: { delay: i * 0.06, duration: 0.35, ease: 'easeOut' } as const,
 });
 
-export default function TeamPage() {
+export default function SearchUsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [departmentFilter, setDepartmentFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState('all');
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-  const dropdownRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
-
-  const filteredMembers = TEAM_MEMBERS.filter(member => {
-    const matchesSearch = 
-      member.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.team.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 9;
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (activeDropdown !== null) {
-        const dropdown = dropdownRefs.current[activeDropdown];
-        if (dropdown && !dropdown.contains(event.target as Node)) {
-          setActiveDropdown(null);
-        }
-      }
+    const handleClickOutside = () => {
+      setActiveDropdown(null);
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (activeDropdown !== null) {
+      document.addEventListener('click', handleClickOutside);
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }
   }, [activeDropdown]);
 
-  
+  const filteredUsers = USERS.filter(user => {
+    const matchesSearch = 
+      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.team.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+    const matchesDepartment = departmentFilter === 'all' || user.department === departmentFilter;
+    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+    
+    return matchesSearch && matchesStatus && matchesDepartment && matchesRole;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
   const stats = {
-    total: TEAM_MEMBERS.length,
-    active: TEAM_MEMBERS.filter(m => m.status === 'active').length,
-    inactive: TEAM_MEMBERS.filter(m => m.status === 'inactive').length,
-    archived: TEAM_MEMBERS.filter(m => m.status === 'archived').length,
+    total: USERS.length,
+    active: USERS.filter(u => u.status === 'active').length,
+    inactive: USERS.filter(u => u.status === 'inactive').length,
+    departments: [...new Set(USERS.map(u => u.department))].length,
   };
+
+  const departments = [...new Set(USERS.map(u => u.department))];
+  const roles = [...new Set(USERS.map(u => u.role))];
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: 1200, padding: '0 16px' }}>
@@ -198,6 +215,12 @@ export default function TeamPage() {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #e8e6e1; border-radius: 2px; }
+        
+        @media (max-width: 1024px) {
+          .users-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
         
         @media (max-width: 768px) {
           .header-flex {
@@ -216,11 +239,11 @@ export default function TeamPage() {
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 8px !important;
           }
-          .team-grid {
+          .users-grid {
             grid-template-columns: 1fr !important;
             gap: 12px !important;
           }
-          .team-card {
+          .user-card {
             padding: 16px !important;
           }
           .container {
@@ -244,57 +267,49 @@ export default function TeamPage() {
 
       {/* Header */}
       <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
-        {/* Breadcrumb */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <Link 
-            href={ROUTES.DASHBOARD.ROOT}
-            style={{
-              color: '#888580', textDecoration: 'none',
-              fontSize: 12.5, transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
-          >
-            Dashboard
-          </Link>
-          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
-          <Link 
-            href={ROUTES.DASHBOARD.TEAMS}
-            style={{
-              color: '#888580', textDecoration: 'none',
-              fontSize: 12.5, transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
-          >
-            Équipes
-          </Link>
-          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
-          <span style={{ color: '#1a1a1a', fontSize: 12.5, fontWeight: 500 }}>
-            Équipe Design UX
-          </span>
-        </nav>
-
         <div className="header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <h2 className="header-text" style={{ fontSize: 20, fontWeight: 500, color: '#1a1a1a', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
-              Équipe
+              Recherche d'utilisateurs
             </h2>
             <p style={{ fontSize: 12.5, color: '#888580', margin: 0 }}>
-              {filteredMembers.length} membres trouvés
+              {filteredUsers.length} utilisateur{filteredUsers.length > 1 ? 's' : ''} trouvé{filteredUsers.length > 1 ? 's' : ''}
             </p>
           </div>
-          <button className="button-text" style={{
-            background: '#1a1a1a', color: '#fff', border: 'none',
-            borderRadius: 8, padding: '8px 16px', fontSize: 12.5,
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#333'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1a1a1a'; }}>
-            <FiPlus size={14} />
-            Inviter un membre
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              style={{
+                background: '#fff', color: '#1a1a1a', border: '1px solid #e8e6e1',
+                borderRadius: 8, padding: '8px 16px', fontSize: 12.5,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { 
+                (e.currentTarget as HTMLButtonElement).style.background = '#fafaf9'; 
+                (e.currentTarget as HTMLButtonElement).style.borderColor = '#d4d2cc';
+              }}
+              onMouseLeave={e => { 
+                (e.currentTarget as HTMLButtonElement).style.background = '#fff'; 
+                (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e6e1';
+              }}
+            >
+              <FiMail size={14} />
+              Contacter
+            </button>
+            <button
+              style={{
+                background: '#1a1a1a', color: '#fff', border: 'none',
+                borderRadius: 8, padding: '8px 16px', fontSize: 12.5,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#333'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1a1a1a'; }}
+            >
+              <FiPlus size={14} />
+              Inviter
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -335,18 +350,18 @@ export default function TeamPage() {
               <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>Départements</span>
             </div>
             <p style={{ fontSize: 24, fontWeight: 500, color: '#1a1a1a', margin: 0, fontFamily: "'DM Mono', monospace" }}>
-              {[...new Set(TEAM_MEMBERS.map(m => m.department))].length}
+              {stats.departments}
             </p>
           </div>
         </div>
 
         {/* Search and filters */}
-        <div className="filters-flex" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <div className="search-container" style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
+        <div className="filters-flex" style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div className="search-container" style={{ position: 'relative', flex: 1, minWidth: 250 }}>
             <FiSearch size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#b0aeaa' }} />
             <input
               type="text"
-              placeholder="Rechercher un membre..."
+              placeholder="Rechercher par nom, email, titre..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -359,7 +374,6 @@ export default function TeamPage() {
             />
           </div>
           
-
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -374,20 +388,50 @@ export default function TeamPage() {
             <option value="inactive">Inactifs</option>
             <option value="archived">Archivés</option>
           </select>
+
+          <select
+            value={departmentFilter}
+            onChange={(e) => setDepartmentFilter(e.target.value)}
+            style={{
+              padding: '8px 12px', border: '1px solid #e8e6e1',
+              borderRadius: 8, fontSize: 12.5, color: '#1a1a1a',
+              background: '#fff', cursor: 'pointer',
+            }}
+          >
+            <option value="all">Tous les départements</option>
+            {departments.map(dept => (
+              <option key={dept} value={dept}>{dept}</option>
+            ))}
+          </select>
+
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            style={{
+              padding: '8px 12px', border: '1px solid #e8e6e1',
+              borderRadius: 8, fontSize: 12.5, color: '#1a1a1a',
+              background: '#fff', cursor: 'pointer',
+            }}
+          >
+            <option value="all">Tous les rôles</option>
+            {roles.map(role => (
+              <option key={role} value={role}>{role}</option>
+            ))}
+          </select>
         </div>
       </motion.div>
 
-      {/* Team members grid */}
-      <div className="team-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 16 }}>
-        {filteredMembers.map((member, i) => {
-          const status = statusConfig[member.status];
-          const roleColor = roleConfig[member.role] || '#888580';
+      {/* Users grid */}
+      <div className="users-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 16, marginBottom: 24 }}>
+        {currentUsers.map((user, i) => {
+          const status = statusConfig[user.status];
+          const roleColor = roleConfig[user.role] || '#888580';
           
           return (
             <motion.div
-              key={member.id}
+              key={user.id}
               {...fadeUp(i + 1)}
-              className="team-card"
+              className="user-card"
               style={{
                 background: '#fff', border: '1px solid #e8e6e1',
                 borderRadius: 12, padding: '20px',
@@ -404,7 +448,7 @@ export default function TeamPage() {
                       background: '#1a1a1a', display: 'flex', alignItems: 'center',
                       justifyContent: 'center', fontSize: 14, fontWeight: 500, color: '#fff',
                     }}>
-                      {member.avatar}
+                      {user.avatar}
                     </div>
                     <div style={{
                       position: 'absolute', bottom: 0, right: 0,
@@ -414,10 +458,10 @@ export default function TeamPage() {
                   </div>
                   <div>
                     <h3 style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', margin: '0 0 2px' }}>
-                      {member.firstName} {member.lastName}
+                      {user.firstName} {user.lastName}
                     </h3>
                     <p style={{ fontSize: 12.5, color: '#888580', margin: 0 }}>
-                      {member.title}
+                      {user.title}
                     </p>
                   </div>
                 </div>
@@ -425,7 +469,7 @@ export default function TeamPage() {
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      setActiveDropdown(activeDropdown === member.id ? null : member.id);
+                      setActiveDropdown(activeDropdown === user.id ? null : user.id);
                     }}
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer',
@@ -433,11 +477,12 @@ export default function TeamPage() {
                       transition: 'color 0.15s',
                     }}
                     onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1a1a1a'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}>
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c6c2'; }}
+                  >
                     <FiMoreHorizontal size={14} />
                   </button>
                   
-                  {activeDropdown === member.id && (
+                  {activeDropdown === user.id && (
                     <div style={{
                       position: 'absolute', right: 0, top: '100%',
                       background: '#fff', border: '1px solid #e8e6e1',
@@ -467,6 +512,7 @@ export default function TeamPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
+                          console.log('Edit user:', user.id);
                         }}
                         style={{
                           width: '100%', padding: '8px 12px', border: 'none',
@@ -492,39 +538,39 @@ export default function TeamPage() {
                     fontSize: 10.5, padding: '2px 6px', borderRadius: 4,
                     background: '#fafaf9', color: roleColor, fontWeight: 400,
                   }}>
-                    {member.role}
+                    {user.role}
                   </span>
                   <span style={{
                     fontSize: 10.5, padding: '2px 6px', borderRadius: 4,
                     background: '#fafaf9', color: '#888580', fontWeight: 400,
                   }}>
-                    {member.department}
+                    {user.department}
                   </span>
                 </div>
                 <p style={{ fontSize: 12, color: '#888580', margin: '0 0 8px', lineHeight: 1.4 }}>
-                  {member.team}
+                  {user.team}
                 </p>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <FiMail size={12} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 11.5, color: '#888580' }}>{member.email}</span>
+                  <span style={{ fontSize: 11.5, color: '#888580' }}>{user.email}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <FiMapPin size={12} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 11.5, color: '#888580' }}>{member.location}</span>
+                  <span style={{ fontSize: 11.5, color: '#888580' }}>{user.location}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <FiBriefcase size={12} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 11.5, color: '#888580' }}>{member.projects} projets</span>
+                  <span style={{ fontSize: 11.5, color: '#888580' }}>{user.projects} projets</span>
                 </div>
               </div>
 
               {/* Skills */}
               <div style={{ marginBottom: 16 }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {member.skills.slice(0, 3).map((skill, index) => (
+                  {user.skills.slice(0, 3).map((skill, index) => (
                     <span key={index} style={{
                       fontSize: 10, padding: '2px 6px', borderRadius: 4,
                       background: '#f0efeb', color: '#5f5e5a',
@@ -532,12 +578,12 @@ export default function TeamPage() {
                       {skill}
                     </span>
                   ))}
-                  {member.skills.length > 3 && (
+                  {user.skills.length > 3 && (
                     <span style={{
                       fontSize: 10, padding: '2px 6px', borderRadius: 4,
                       background: '#f0efeb', color: '#888580',
                     }}>
-                      +{member.skills.length - 3}
+                      +{user.skills.length - 3}
                     </span>
                   )}
                 </div>
@@ -545,8 +591,8 @@ export default function TeamPage() {
 
               {/* Social links */}
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                {member.github && (
-                  <a href={`https://github.com/${member.github}`} style={{
+                {user.github && (
+                  <a href={`https://github.com/${user.github}`} style={{
                     width: 28, height: 28, borderRadius: 6,
                     background: '#f5f4f1', display: 'flex', alignItems: 'center',
                     justifyContent: 'center', color: '#888580',
@@ -557,8 +603,8 @@ export default function TeamPage() {
                     <FiGithub size={12} />
                   </a>
                 )}
-                {member.linkedin && (
-                  <a href={`https://linkedin.com/in/${member.linkedin}`} style={{
+                {user.linkedin && (
+                  <a href={`https://linkedin.com/in/${user.linkedin}`} style={{
                     width: 28, height: 28, borderRadius: 6,
                     background: '#f5f4f1', display: 'flex', alignItems: 'center',
                     justifyContent: 'center', color: '#888580',
@@ -569,8 +615,8 @@ export default function TeamPage() {
                     <FiLinkedin size={12} />
                   </a>
                 )}
-                {member.website && (
-                  <a href={member.website} style={{
+                {user.website && (
+                  <a href={user.website} style={{
                     width: 28, height: 28, borderRadius: 6,
                     background: '#f5f4f1', display: 'flex', alignItems: 'center',
                     justifyContent: 'center', color: '#888580',
@@ -586,12 +632,12 @@ export default function TeamPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f0efeb' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <FiCalendar size={12} style={{ color: '#b0aeaa' }} />
-                  <span style={{ fontSize: 11, color: '#888580' }}>{member.joinDate}</span>
+                  <span style={{ fontSize: 11, color: '#888580' }}>{user.joinDate}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <FiStar size={12} style={{ color: '#f59e0b' }} />
                   <span style={{ fontSize: 11, color: '#888580', fontFamily: "'DM Mono', monospace" }}>
-                    {member.rating}
+                    {user.rating}
                   </span>
                 </div>
                 <span style={{
@@ -605,6 +651,71 @@ export default function TeamPage() {
           );
         })}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <motion.div {...fadeUp(10)} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            style={{
+              padding: '8px 12px', border: '1px solid #e8e6e1',
+              borderRadius: 8, fontSize: 12.5, color: currentPage === 1 ? '#c8c6c2' : '#1a1a1a',
+              background: '#fff', cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}
+          >
+            <FiChevronLeft size={14} />
+            Précédent
+          </button>
+          
+          <div style={{ display: 'flex', gap: 4 }}>
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  style={{
+                    padding: '8px 12px', border: '1px solid #e8e6e1',
+                    borderRadius: 8, fontSize: 12.5,
+                    background: currentPage === pageNum ? '#1a1a1a' : '#fff',
+                    color: currentPage === pageNum ? '#fff' : '#1a1a1a',
+                    cursor: 'pointer',
+                    minWidth: 32,
+                  }}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            style={{
+              padding: '8px 12px', border: '1px solid #e8e6e1',
+              borderRadius: 8, fontSize: 12.5, color: currentPage === totalPages ? '#c8c6c2' : '#1a1a1a',
+              background: '#fff', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}
+          >
+            Suivant
+            <FiChevronRight size={14} />
+          </button>
+        </motion.div>
+      )}
     </div>
   );
 }

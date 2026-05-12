@@ -13,6 +13,21 @@ import {
 } from 'react-icons/fi';
 import { ROUTES } from '@/src/constants/routes';
 
+const statusConfig: Record<string, { label: string; color: string }> = {
+  active: { label: 'Actif', color: '#1d9e75' },
+  inactive: { label: 'Inactif', color: '#f59e0b' },
+  archived: { label: 'Archivé', color: '#6b7280' },
+};
+
+const roleConfig: Record<string, string> = {
+  'Lead Designer': '#f59e0b',
+  'Senior Developer': '#1d9e75',
+  'Marketing Manager': '#8b5cf6',
+  'Backend Developer': '#3b82f6',
+  'Product Manager': '#ec4899',
+  'Frontend Developer': '#10b981',
+};
+
 const fadeUp = (i: number) => ({
   initial: { opacity: 0, y: 14 },
   animate: { opacity: 1, y: 0 },
@@ -35,8 +50,11 @@ export default function ViewMemberPage() {
     bio: 'Designer passionnée avec 7 ans d\'expérience dans la création d\'expériences utilisateur exceptionnelles. Spécialisée en design thinking, prototypage et design systems.',
     joinDate: '10 juin 2023',
     status: 'active',
+    role: 'Lead Designer',
     department: 'Design',
     team: 'Équipe Design UX',
+    projects: 18,
+    rating: 4.8,
     github: 'mariedesign',
     linkedin: 'marie-design',
     website: 'https://mariedesign.dev',
@@ -311,64 +329,127 @@ export default function ViewMemberPage() {
           {/* Profile card */}
           <motion.div {...fadeUp(1)} className="member-card" style={{
             background: '#fff', border: '1px solid #e8e6e1',
-            borderRadius: 12, padding: '24px', textAlign: 'center',
+            borderRadius: 12, padding: '20px',
           }}>
-            <div className="member-avatar" style={{
-              width: 80, height: 80, borderRadius: '50%',
-              background: '#1a1a1a', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: 24, fontWeight: 500, color: '#fff',
-              margin: '0 auto', marginBottom: 16,
-            }}>
-              {member.avatar}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ position: 'relative' }}>
+                  <div className="member-avatar" style={{
+                    width: 48, height: 48, borderRadius: '50%',
+                    background: '#1a1a1a', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', fontSize: 14, fontWeight: 500, color: '#fff',
+                  }}>
+                    {member.avatar}
+                  </div>
+                  <div style={{
+                    position: 'absolute', bottom: 0, right: 0,
+                    width: 12, height: 12, borderRadius: '50%',
+                    background: statusConfig[member.status].color, border: '2px solid #fff',
+                  }} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', margin: '0 0 2px' }}>
+                    {member.firstName} {member.lastName}
+                  </h3>
+                  <p style={{ fontSize: 12.5, color: '#888580', margin: 0 }}>
+                    {member.title}
+                  </p>
+                </div>
+              </div>
             </div>
-            
-            <h3 style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', margin: '0 0 4px' }}>
-              {member.firstName} {member.lastName}
-            </h3>
-            <p style={{ fontSize: 12.5, color: '#888580', margin: '0 0 8px' }}>
-              {member.title}
-            </p>
-            <p style={{ fontSize: 11.5, color: '#b0aeaa', margin: '0 0 16px' }}>
-              {member.team}
-            </p>
-            
-            <div className="social-links" style={{ display: 'flex', justifyContent: 'center', gap: 8, alignItems: 'center' }}>
+
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{
+                  fontSize: 10.5, padding: '2px 6px', borderRadius: 4,
+                  background: '#fafaf9', color: roleConfig[member.role], fontWeight: 400,
+                }}>
+                  {member.role}
+                </span>
+                <span style={{
+                  fontSize: 10.5, padding: '2px 6px', borderRadius: 4,
+                  background: '#fafaf9', color: '#888580', fontWeight: 400,
+                }}>
+                  {member.department}
+                </span>
+              </div>
+              <p style={{ fontSize: 12, color: '#888580', margin: '0 0 8px', lineHeight: 1.4 }}>
+                {member.team}
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FiMail size={12} style={{ color: '#b0aeaa' }} />
+                <span style={{ fontSize: 11.5, color: '#888580' }}>{member.email}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FiMapPin size={12} style={{ color: '#b0aeaa' }} />
+                <span style={{ fontSize: 11.5, color: '#888580' }}>{member.location}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FiBriefcase size={12} style={{ color: '#b0aeaa' }} />
+                <span style={{ fontSize: 11.5, color: '#888580' }}>{member.projects} projets</span>
+              </div>
+            </div>
+
+            {/* Social links */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
               {member.github && (
                 <a href={`https://github.com/${member.github}`} style={{
-                  width: 32, height: 32, borderRadius: 6,
+                  width: 28, height: 28, borderRadius: 6,
                   background: '#f5f4f1', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', color: '#888580',
                   textDecoration: 'none', transition: 'all 0.15s',
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#e8e6e1'; (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#f5f4f1'; (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}>
-                  <FiGithub size={14} />
+                  <FiGithub size={12} />
                 </a>
               )}
               {member.linkedin && (
                 <a href={`https://linkedin.com/in/${member.linkedin}`} style={{
-                  width: 32, height: 32, borderRadius: 6,
+                  width: 28, height: 28, borderRadius: 6,
                   background: '#f5f4f1', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', color: '#888580',
                   textDecoration: 'none', transition: 'all 0.15s',
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#e8e6e1'; (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#f5f4f1'; (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}>
-                  <FiLinkedin size={14} />
+                  <FiLinkedin size={12} />
                 </a>
               )}
               {member.website && (
                 <a href={member.website} style={{
-                  width: 32, height: 32, borderRadius: 6,
+                  width: 28, height: 28, borderRadius: 6,
                   background: '#f5f4f1', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', color: '#888580',
                   textDecoration: 'none', transition: 'all 0.15s',
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#e8e6e1'; (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#f5f4f1'; (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}>
-                  <FiGlobe size={14} />
+                  <FiGlobe size={12} />
                 </a>
               )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f0efeb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <FiCalendar size={12} style={{ color: '#b0aeaa' }} />
+                <span style={{ fontSize: 11, color: '#888580' }}>{member.joinDate}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <FiStar size={12} style={{ color: '#f59e0b' }} />
+                <span style={{ fontSize: 11, color: '#888580', fontFamily: "'DM Mono', monospace" }}>
+                  {member.rating}
+                </span>
+              </div>
+              <span style={{
+                fontSize: 10.5, padding: '2px 6px', borderRadius: 4,
+                background: '#fafaf9', color: statusConfig[member.status].color, fontWeight: 400,
+              }}>
+                {statusConfig[member.status].label}
+              </span>
             </div>
           </motion.div>
 
