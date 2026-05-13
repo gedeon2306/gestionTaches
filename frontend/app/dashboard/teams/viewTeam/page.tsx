@@ -10,7 +10,7 @@ import {
   FiGlobe, FiStar, FiUsers,
 } from 'react-icons/fi';
 import { ROUTES } from '@/src/constants/routes';
-import Breadcrumb, { getTeamsBreadcrumb } from '@/src/components/uxComponents/Breadcrumb';
+import Breadcrumb, { getBreadcrumb } from '@/src/components/uxComponents/Breadcrumb';
 
 const TEAM_MEMBERS = [
   {
@@ -247,7 +247,7 @@ export default function TeamPage() {
       <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
         {/* Breadcrumb */}
         <Breadcrumb 
-          items={getTeamsBreadcrumb()}
+          items={getBreadcrumb('Équipes')}
           currentPage="Équipe Design UX"
         />
 

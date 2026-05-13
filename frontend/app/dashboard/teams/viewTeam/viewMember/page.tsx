@@ -10,7 +10,7 @@ import {
   FiLinkedin, FiTwitter, FiGlobe, FiTarget,
   FiActivity, FiBarChart2, FiZap,
 } from 'react-icons/fi';
-import Breadcrumb, { getSearchUsersBreadcrumb, getTeamsBreadcrumb } from '@/src/components/uxComponents/Breadcrumb';
+import Breadcrumb, { getBreadcrumb } from '@/src/components/uxComponents/Breadcrumb';
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   active: { label: 'Actif', color: '#1d9e75' },
@@ -251,7 +251,7 @@ export default function ViewMemberPage() {
       <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
         {/* Breadcrumb */}
         <Breadcrumb 
-          items={originPage === 'search' ? getSearchUsersBreadcrumb() : getTeamsBreadcrumb(member.team)}
+          items={originPage === 'search' ? getBreadcrumb('Recherche') : getBreadcrumb('',member.team)}
           currentPage={`${member.firstName} ${member.lastName}`}
         />
 

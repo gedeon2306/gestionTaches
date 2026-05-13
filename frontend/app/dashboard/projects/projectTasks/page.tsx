@@ -7,7 +7,7 @@ import {
   FiPlus, FiFilter, FiSearch, FiCheckCircle, FiCircle,
   FiCalendar, FiUser, FiMoreHorizontal, FiEdit2, FiTrash2,
 } from 'react-icons/fi';
-import Breadcrumb, { getProjectsBreadcrumb } from '@/src/components/uxComponents/Breadcrumb';
+import Breadcrumb, { getBreadcrumb } from '@/src/components/uxComponents/Breadcrumb';
 
 const TASKS = [
   { id: 1, title: 'Finaliser la maquette landing page', project: 'Site vitrine', status: 'done', priority: 'haute', assignee: 'MR', due: 'Aujourd\'hui', description: 'Finaliser les derniers détails de la maquette' },
@@ -105,7 +105,7 @@ export default function TasksPage() {
       <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
         {/* Breadcrumb */}
         <Breadcrumb 
-          items={getProjectsBreadcrumb()}
+          items={getBreadcrumb('Projets')}
           currentPage="Tâches du projet ..."
         />
 

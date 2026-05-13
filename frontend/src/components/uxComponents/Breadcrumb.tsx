@@ -48,19 +48,23 @@ export default function Breadcrumb({ items, currentPage }: BreadcrumbProps) {
   );
 }
 
-// Helper functions pour générer les breadcrumbs selon le contexte
-export const getSearchUsersBreadcrumb = (): BreadcrumbItem[] => [
-  { label: 'Dashboard', href: ROUTES.DASHBOARD.ROOT },
-  { label: 'Recherche', href: ROUTES.DASHBOARD.SEARCH_USERS },
-];
-
-export const getProjectsBreadcrumb = (): BreadcrumbItem[] => [
-  { label: 'Dashboard', href: ROUTES.DASHBOARD.ROOT },
-  { label: 'Projets', href: ROUTES.DASHBOARD.PROJECTS },
-];
-
-export const getTeamsBreadcrumb = (teamName?: string): BreadcrumbItem[] => [
-  { label: 'Dashboard', href: ROUTES.DASHBOARD.ROOT },
-  { label: 'Équipes', href: ROUTES.DASHBOARD.TEAMS },
-  ...(teamName ? [{ label: teamName, href: ROUTES.DASHBOARD.VIEWTEAM } as BreadcrumbItem] : []),
-];
+// Helper function pour générer les breadcrumbs selon le contexte
+export const getBreadcrumb = (originPage?: string | null, teamName?: string ): BreadcrumbItem[] => {
+  if(originPage === "Projets") {
+    return [
+      { label: originPage, href: ROUTES.DASHBOARD.PROJECTS }
+    ];
+  } else if(originPage === "Équipes") {
+    return [
+      { label: originPage, href: ROUTES.DASHBOARD.TEAMS }
+    ];
+  } else if(originPage === "Recherche") {
+    return [
+      { label: originPage, href: ROUTES.DASHBOARD.SEARCH_USERS }
+    ];
+  }
+  return [
+    { label: 'Équipes', href: ROUTES.DASHBOARD.TEAMS },
+    ...(teamName ? [{ label: teamName, href: ROUTES.DASHBOARD.VIEWTEAM } as BreadcrumbItem] : []),
+  ];
+};
