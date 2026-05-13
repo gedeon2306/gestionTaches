@@ -10,6 +10,7 @@ import {
   FiGlobe, FiStar, FiUsers,
 } from 'react-icons/fi';
 import { ROUTES } from '@/src/constants/routes';
+import Breadcrumb, { getTeamsBreadcrumb } from '@/src/components/uxComponents/Breadcrumb';
 
 const TEAM_MEMBERS = [
   {
@@ -245,35 +246,10 @@ export default function TeamPage() {
       {/* Header */}
       <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
         {/* Breadcrumb */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <Link 
-            href={ROUTES.DASHBOARD.ROOT}
-            style={{
-              color: '#888580', textDecoration: 'none',
-              fontSize: 12.5, transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
-          >
-            Dashboard
-          </Link>
-          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
-          <Link 
-            href={ROUTES.DASHBOARD.TEAMS}
-            style={{
-              color: '#888580', textDecoration: 'none',
-              fontSize: 12.5, transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#888580'; }}
-          >
-            Équipes
-          </Link>
-          <span style={{ color: '#b0aeaa', fontSize: 12 }}>/</span>
-          <span style={{ color: '#1a1a1a', fontSize: 12.5, fontWeight: 500 }}>
-            Équipe Design UX
-          </span>
-        </nav>
+        <Breadcrumb 
+          items={getTeamsBreadcrumb()}
+          currentPage="Équipe Design UX"
+        />
 
         <div className="header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>

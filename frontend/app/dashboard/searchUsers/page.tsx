@@ -495,6 +495,10 @@ export default function SearchUsersPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           setActiveDropdown(null);
+                          // Marquer l'origine pour le breadcrumb
+                          if (typeof window !== 'undefined') {
+                            sessionStorage.setItem('searchUsersOrigin', 'true');
+                          }
                         }}
                         style={{
                           width: '100%', padding: '8px 12px', border: 'none',
