@@ -94,3 +94,29 @@ class UserProfil(models.Model):
 
     def __str__(self):
         return f"Profil de {self.user.email}"
+
+
+class Skill(models.Model):
+    """Compétences avec niveau (barre de progression)"""
+    CATEGORIES = [
+        ('frontend', 'Frontend'),
+        ('backend', 'Backend'),
+        ('language', 'Language'),
+        ('database', 'Database'),
+        ('devops', 'DevOps'),
+        ('design', 'Design'),
+        ('research', 'Research'),
+    ]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='skills')
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=50, choices=CATEGORIES)
+    level = models.PositiveSmallIntegerField(
+        help_text="Niveau de 0 à 100"
+    )
+
+    class Meta:
+        ordering = ['-level']
+
+    def __str__(self):
+        return f"{self.name} ({self.level}%)"
