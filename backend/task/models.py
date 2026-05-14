@@ -77,3 +77,20 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.user.email} — {self.provider}"
+
+
+class UserProfil(models.Model):
+    """Informations personnelles et réseaux sociaux (ProfilePage)"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    title = models.CharField(max_length=255, blank=True)
+    bio = models.TextField(blank=True)
+    phone = models.CharField(max_length=50, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    website = models.URLField(blank=True)
+    github = models.CharField(max_length=100, blank=True)
+    linkedin = models.CharField(max_length=100, blank=True)
+    twitter = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return f"Profil de {self.user.email}"
