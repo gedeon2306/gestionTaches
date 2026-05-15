@@ -192,6 +192,32 @@ class Team(models.Model):
         return self.name
 
 
+class TeamMembership(models.Model):
+    """Table intermédiaire — porte le rôle et la date d'entrée dans l'équipe."""
+    ROLE_CHOICES = [
+        ('lead_designer',    'Lead Designer'),
+        ('senior_developer', 'Senior Developer'),
+        ('frontend_developer', 'Frontend Developer'),
+        ('backend_developer',  'Backend Developer'),
+        ('product_manager',  'Product Manager'),
+        ('marketing_manager','Marketing Manager'),
+        ('member',           'Membre'),
+    ]
+
+    id         = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='memberships')
+    team       = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='memberships')
+    role       = models.CharField(max_length=50, choices=ROLE_CHOICES, default='member')
+    joined_at  = models.DateField()
+    is_active  = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('user', 'team')
+        ordering = ['joined_at']
+
+    def __str__(self):
+        return f"{self.user.email} → {self.team.name} ({self.role})"
+
 
 
 
