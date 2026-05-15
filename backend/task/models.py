@@ -219,5 +219,45 @@ class TeamMembership(models.Model):
         return f"{self.user.email} → {self.team.name} ({self.role})"
 
 
+class Project(models.Model):
+    STATUS_CHOICES = [
+        ('active',    'Actif'),
+        ('planning',  'Planification'),
+        ('completed', 'Terminé'),
+        ('archived',  'Archivé'),
+    ]
+    PRIORITY_CHOICES = [
+        ('haute',   'Haute'),
+        ('moyenne', 'Moyenne'),
+        ('basse',   'Basse'),
+    ]
+
+    id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name        = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    status      = models.CharField(max_length=20, choices=STATUS_CHOICES, default='planning')
+    priority    = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='moyenne')
+    color       = models.CharField(max_length=20, blank=True, default='#1a1a1a')
+    deadline    = models.DateField(null=True, blank=True)
+    team        = models.ForeignKey('Team', on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')
+    members     = models.ManyToManyField(User, related_name='projects', blank=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
+    updated_at  = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    @property
+    def progress(self):
+        total = self.tasks.count()
+        if total == 0:
+            return 0
+        done = self.tasks.filter(status='done').count()
+        return round((done / total) * 100)
+
+    def __str__(self):
+        return self.name
+
+
 
 
