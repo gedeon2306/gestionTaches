@@ -135,3 +135,36 @@ class Achievement(models.Model):
 
     def __str__(self):
         return f"{self.title} — {self.organization}"
+
+
+class Event(models.Model):
+    TYPE_CHOICES = [
+        ('meeting',      'Réunion'),
+        ('deadline',     'Deadline'),
+        ('review',       'Review'),
+        ('deployment',   'Déploiement'),
+        ('training',     'Formation'),
+        ('presentation', 'Présentation'),
+        ('other',        'Autre'),
+    ]
+
+    id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    creator     = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_events')
+    title       = models.CharField(max_length=255)
+    type        = models.CharField(max_length=50, choices=TYPE_CHOICES, default='other')
+    color       = models.CharField(max_length=20, blank=True, default='#1a1a1a')
+    start_at    = models.DateTimeField()
+    end_at      = models.DateTimeField(null=True, blank=True)
+    location    = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
+    attendees   = models.ManyToManyField(User, related_name='events', blank=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
+    updated_at  = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['start_at']
+
+    def __str__(self):
+        return f"{self.title} — {self.start_at.strftime('%d/%m/%Y %H:%M')}"
+
+
