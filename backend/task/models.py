@@ -80,7 +80,6 @@ class Account(models.Model):
 
 
 class UserProfil(models.Model):
-    """Informations personnelles et réseaux sociaux (ProfilePage)"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     title = models.CharField(max_length=255, blank=True)
@@ -97,7 +96,6 @@ class UserProfil(models.Model):
 
 
 class Skill(models.Model):
-    """Compétences avec niveau (barre de progression)"""
     CATEGORIES = [
         ('frontend', 'Frontend'),
         ('backend', 'Backend'),
@@ -107,13 +105,12 @@ class Skill(models.Model):
         ('design', 'Design'),
         ('research', 'Research'),
     ]
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='skills')
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=50, choices=CATEGORIES)
-    level = models.PositiveSmallIntegerField(
-        help_text="Niveau de 0 à 100"
-    )
+    level = models.PositiveSmallIntegerField()
 
     class Meta:
         ordering = ['-level']
@@ -123,7 +120,6 @@ class Skill(models.Model):
 
 
 class Achievement(models.Model):
-    """Réalisations et awards"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='achievements')
     title = models.CharField(max_length=255)
@@ -139,27 +135,27 @@ class Achievement(models.Model):
 
 class Event(models.Model):
     TYPE_CHOICES = [
-        ('meeting',      'Réunion'),
-        ('deadline',     'Deadline'),
-        ('review',       'Review'),
-        ('deployment',   'Déploiement'),
-        ('training',     'Formation'),
+        ('meeting', 'Réunion'),
+        ('deadline', 'Deadline'),
+        ('review', 'Review'),
+        ('deployment', 'Déploiement'),
+        ('training', 'Formation'),
         ('presentation', 'Présentation'),
-        ('other',        'Autre'),
+        ('other', 'Autre'),
     ]
 
-    id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    creator     = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_events')
-    title       = models.CharField(max_length=255)
-    type        = models.CharField(max_length=50, choices=TYPE_CHOICES, default='other')
-    color       = models.CharField(max_length=20, blank=True, default='#1a1a1a')
-    start_at    = models.DateTimeField()
-    end_at      = models.DateTimeField(null=True, blank=True)
-    location    = models.CharField(max_length=255, blank=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_events')
+    title = models.CharField(max_length=255)
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='other')
+    color = models.CharField(max_length=20, blank=True, default='#1a1a1a')
+    start_at = models.DateTimeField()
+    end_at = models.DateTimeField(null=True, blank=True)
+    location = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
-    attendees   = models.ManyToManyField(User, related_name='events', blank=True)
-    created_at  = models.DateTimeField(auto_now_add=True)
-    updated_at  = models.DateTimeField(auto_now=True)
+    attendees = models.ManyToManyField(User, related_name='events', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['start_at']
@@ -170,20 +166,20 @@ class Event(models.Model):
 
 class Team(models.Model):
     STATUS_CHOICES = [
-        ('active',   'Active'),
+        ('active', 'Active'),
         ('inactive', 'Inactive'),
         ('archived', 'Archivée'),
     ]
 
-    id           = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name         = models.CharField(max_length=255)
-    description  = models.TextField(blank=True)
-    department   = models.CharField(max_length=255, blank=True)
-    status       = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
-    leader       = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='led_teams')
-    members      = models.ManyToManyField(User, through='TeamMembership', related_name='teams')
-    created_at   = models.DateTimeField(auto_now_add=True)
-    updated_at   = models.DateTimeField(auto_now=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    department = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    leader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='led_teams')
+    members = models.ManyToManyField(User, through='TeamMembership', related_name='teams')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -193,23 +189,12 @@ class Team(models.Model):
 
 
 class TeamMembership(models.Model):
-    """Table intermédiaire — porte le rôle et la date d'entrée dans l'équipe."""
-    ROLE_CHOICES = [
-        ('lead_designer',    'Lead Designer'),
-        ('senior_developer', 'Senior Developer'),
-        ('frontend_developer', 'Frontend Developer'),
-        ('backend_developer',  'Backend Developer'),
-        ('product_manager',  'Product Manager'),
-        ('marketing_manager','Marketing Manager'),
-        ('member',           'Membre'),
-    ]
 
-    id         = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='memberships')
-    team       = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='memberships')
-    role       = models.CharField(max_length=50, choices=ROLE_CHOICES, default='member')
-    joined_at  = models.DateField()
-    is_active  = models.BooleanField(default=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='memberships')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='memberships')
+    joined_at = models.DateField()
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('user', 'team')
@@ -221,15 +206,15 @@ class TeamMembership(models.Model):
 
 class Project(models.Model):
     STATUS_CHOICES = [
-        ('active',    'Actif'),
-        ('planning',  'Planification'),
+        ('active', 'Actif'),
+        ('planning', 'Planification'),
         ('completed', 'Terminé'),
     ]
     
     PRIORITY_CHOICES = [
-        ('haute',   'Haute'),
+        ('haute', 'Haute'),
         ('moyenne', 'Moyenne'),
-        ('basse',   'Basse'),
+        ('basse', 'Basse'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -251,15 +236,15 @@ class Project(models.Model):
 
 class Task(models.Model):
     STATUS_CHOICES = [
-        ('todo',       'À faire'),
+        ('todo', 'À faire'),
         ('inprogress', 'En cours'),
-        ('done',       'Terminé'),
+        ('done', 'Terminé'),
     ]
     
     PRIORITY_CHOICES = [
-        ('haute',   'Haute'),
+        ('haute', 'Haute'),
         ('moyenne', 'Moyenne'),
-        ('basse',   'Basse'),
+        ('basse', 'Basse'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
