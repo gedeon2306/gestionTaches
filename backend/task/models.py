@@ -255,22 +255,23 @@ class Task(models.Model):
         ('inprogress', 'En cours'),
         ('done',       'Terminé'),
     ]
+    
     PRIORITY_CHOICES = [
         ('haute',   'Haute'),
         ('moyenne', 'Moyenne'),
         ('basse',   'Basse'),
     ]
 
-    id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    project     = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
-    title       = models.CharField(max_length=255)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
+    title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    status      = models.CharField(max_length=20, choices=STATUS_CHOICES, default='todo')
-    priority    = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='moyenne')
-    assignee    = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')
-    due_date    = models.DateField(null=True, blank=True)
-    created_at  = models.DateTimeField(auto_now_add=True)
-    updated_at  = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='todo')
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='moyenne')
+    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')
+    due_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['due_date', '-priority']
