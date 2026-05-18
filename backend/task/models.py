@@ -174,12 +174,18 @@ class Team(models.Model):
         ('inactive', 'Inactive'),
         ('archived', 'Archivée'),
     ]
+    
+    PRIOTITY_CHOICES = [
+        ('haute',   'Haute'),
+        ('moyenne', 'Moyenne'),
+        ('basse',   'Basse'),
+    ]
 
     id           = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name         = models.CharField(max_length=255)
     description  = models.TextField(blank=True)
-    department   = models.CharField(max_length=255, blank=True)
     status       = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    priority     = models.CharField(max_length=10, choices=PRIOTITY_CHOICES, default='moyenne')
     leader       = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='led_teams')
     members      = models.ManyToManyField(User, through='TeamMembership', related_name='teams')
     created_at   = models.DateTimeField(auto_now_add=True)
