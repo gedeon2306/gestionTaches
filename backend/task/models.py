@@ -4,20 +4,13 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, password=None):
+    def create_user(self, email, name, password=None, **extra_fields):
         if not email:
             raise ValueError("L'email est obligatoire")
-        user = self.model(
-            email=self.normalize_email(email),
-            name=name
-        )
+        
+        email = self.normalize_email(email).lower()
+        user = self.model(email=email, name=name, **extra_fields)
         user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, name, password):
-        user = self.create_user(email, name, password)
-        user.is_admin = True
         user.save(using=self._db)
         return user
 
@@ -264,3 +257,29 @@ class Task(models.Model):
     def __str__(self):
         return f"{self.title} ({self.project.name})"
 
+
+class Invitation(models.Model):
+    TYPE_CHOICES = [
+        ('invite', 'Invitation'),
+        ('request', 'Demande'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('accepted', 'Acceptée'),
+        ('rejected', 'Rejetée'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='invitations')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_invitations')
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_invitations', null=True, blank=True)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    message = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ('team', 'sender', 'recipient', 'type', 'status')
