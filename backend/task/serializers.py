@@ -83,3 +83,23 @@ class AccountSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user']
         # Les tokens sensibles sont exclus volontairement
 
+
+# ─────────────────────────────────────────
+# EVENTS
+# ─────────────────────────────────────────
+
+class EventSerializer(serializers.ModelSerializer):
+    creator_name = serializers.ReadOnlyField(source='creator.name')
+    attendees_details = UserSerializer(source='attendees', many=True, read_only=True)
+
+    class Meta:
+        model = Event
+        fields = [
+            'id', 'title', 'type', 'color',
+            'start_at', 'end_at', 'location', 'description',
+            'creator', 'creator_name',
+            'attendees', 'attendees_details',
+            'created_at', 'updated_at',
+        ]
+        read_only_fields = ['id', 'creator', 'created_at', 'updated_at']
+
