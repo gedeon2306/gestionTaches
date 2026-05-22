@@ -136,3 +136,37 @@ class TeamSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+
+# ─────────────────────────────────────────
+# PROJECTS & TASKS
+# ─────────────────────────────────────────
+
+class TaskSerializer(serializers.ModelSerializer):
+    assignee_name   = serializers.ReadOnlyField(source='assignee.name')
+    project_name    = serializers.ReadOnlyField(source='project.name')
+
+    class Meta:
+        model = Task
+        fields = [
+            'id', 'title', 'description', 'status', 'priority',
+            'due_date', 'project', 'project_name',
+            'assignee', 'assignee_name',
+            'created_at', 'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    team_name = serializers.ReadOnlyField(source='team.name')
+    tasks     = TaskSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Project
+        fields = [
+            'id', 'name', 'description', 'status', 'priority',
+            'deadline', 'team', 'team_name',
+            'tasks',
+            'created_at', 'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
