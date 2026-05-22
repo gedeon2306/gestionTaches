@@ -64,3 +64,22 @@ class UserProfilSerializer(serializers.ModelSerializer):
             'skills', 'achievements',
         ]
         read_only_fields = ['id', 'user']
+
+
+# ─────────────────────────────────────────
+# ACCOUNT (OAuth)
+# ─────────────────────────────────────────
+
+class AccountSerializer(serializers.ModelSerializer):
+    user_email = serializers.ReadOnlyField(source='user.email')
+
+    class Meta:
+        model = Account
+        fields = [
+            'id', 'user', 'user_email', 'type', 'provider',
+            'provider_account_id', 'token_type', 'scope',
+            'expires_at', 'session_state',
+        ]
+        read_only_fields = ['id', 'user']
+        # Les tokens sensibles sont exclus volontairement
+
