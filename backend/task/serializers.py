@@ -103,3 +103,36 @@ class EventSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'creator', 'created_at', 'updated_at']
 
+
+# ─────────────────────────────────────────
+# TEAMS
+# ─────────────────────────────────────────
+
+class TeamMembershipSerializer(serializers.ModelSerializer):
+    user_name  = serializers.ReadOnlyField(source='user.name')
+    user_email = serializers.ReadOnlyField(source='user.email')
+    team_name  = serializers.ReadOnlyField(source='team.name')
+
+    class Meta:
+        model = TeamMembership
+        fields = [
+            'id', 'user', 'user_name', 'user_email',
+            'team', 'team_name', 'joined_at', 'is_active',
+        ]
+        read_only_fields = ['id']
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    leader_name = serializers.ReadOnlyField(source='leader.name')
+    memberships = TeamMembershipSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Team
+        fields = [
+            'id', 'name', 'description', 'department', 'status',
+            'leader', 'leader_name',
+            'memberships',
+            'created_at', 'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
