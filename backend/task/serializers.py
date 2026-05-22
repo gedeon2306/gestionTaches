@@ -5,10 +5,6 @@ from .models import (
 )
 
 
-# ─────────────────────────────────────────
-# AUTH
-# ─────────────────────────────────────────
-
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
 
@@ -30,10 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'email', 'image', 'created_at']
         read_only_fields = ['id', 'created_at']
 
-
-# ─────────────────────────────────────────
-# PROFIL & SKILLS
-# ─────────────────────────────────────────
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
@@ -66,10 +58,6 @@ class UserProfilSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user']
 
 
-# ─────────────────────────────────────────
-# ACCOUNT (OAuth)
-# ─────────────────────────────────────────
-
 class AccountSerializer(serializers.ModelSerializer):
     user_email = serializers.ReadOnlyField(source='user.email')
 
@@ -81,12 +69,7 @@ class AccountSerializer(serializers.ModelSerializer):
             'expires_at', 'session_state',
         ]
         read_only_fields = ['id', 'user']
-        # Les tokens sensibles sont exclus volontairement
 
-
-# ─────────────────────────────────────────
-# EVENTS
-# ─────────────────────────────────────────
 
 class EventSerializer(serializers.ModelSerializer):
     creator_name = serializers.ReadOnlyField(source='creator.name')
@@ -103,10 +86,6 @@ class EventSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'creator', 'created_at', 'updated_at']
 
-
-# ─────────────────────────────────────────
-# TEAMS
-# ─────────────────────────────────────────
 
 class TeamMembershipSerializer(serializers.ModelSerializer):
     user_name  = serializers.ReadOnlyField(source='user.name')
@@ -137,10 +116,6 @@ class TeamSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
-# ─────────────────────────────────────────
-# PROJECTS & TASKS
-# ─────────────────────────────────────────
-
 class TaskSerializer(serializers.ModelSerializer):
     assignee_name   = serializers.ReadOnlyField(source='assignee.name')
     project_name    = serializers.ReadOnlyField(source='project.name')
@@ -170,10 +145,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-
-# ─────────────────────────────────────────
-# INVITATIONS
-# ─────────────────────────────────────────
 
 class InvitationSerializer(serializers.ModelSerializer):
     sender_name    = serializers.ReadOnlyField(source='sender.name')
