@@ -170,3 +170,23 @@ class ProjectSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+
+# ─────────────────────────────────────────
+# INVITATIONS
+# ─────────────────────────────────────────
+
+class InvitationSerializer(serializers.ModelSerializer):
+    sender_name    = serializers.ReadOnlyField(source='sender.name')
+    recipient_name = serializers.ReadOnlyField(source='recipient.name')
+    team_name      = serializers.ReadOnlyField(source='team.name')
+
+    class Meta:
+        model = Invitation
+        fields = [
+            'id', 'type', 'status', 'message',
+            'team', 'team_name',
+            'sender', 'sender_name',
+            'recipient', 'recipient_name',
+            'created_at', 'responded_at',
+        ]
+        read_only_fields = ['id', 'sender', 'created_at', 'responded_at']
