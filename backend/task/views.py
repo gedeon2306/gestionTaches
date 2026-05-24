@@ -1,4 +1,36 @@
 import requests
+
+from django.shortcuts import render, redirect
+from django.conf import settings
+from django.db import models
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.models import BaseUserManager
+
+from .tokens import email_confirmation_token_generator
+from .email_utils import send_confirmation_email, send_password_reset_email, send_login_email, send_new_email_code
+
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+
+from rest_framework import serializers as drf_serializers
+
+from .models import User, Famille, Defunt, Paiement, LignePaiement
+from .serializers import (
+    UserSerializer, 
+    FamilleSerializer, 
+    DefuntSerializer, 
+    PaiementSerializer, 
+    LignePaiementSerializer,
+    MyTokenObtainPairSerializer
+)
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
