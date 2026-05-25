@@ -16,6 +16,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import serializers as drf_serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
@@ -33,14 +34,6 @@ from .email_utils import (
 
 def landing_view(request):
     return render(request, "landing.html")
-
-
-def get_tokens(user):
-    refresh = RefreshToken.for_user(user)
-    return {
-        'access': str(refresh.access_token),
-        'refresh': str(refresh),
-    }
 
 
 def _error_server():
@@ -89,7 +82,7 @@ def _forbidden(texte):
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def registerView(request):
+def register(request):
     
     if len(request.data.get('password', '')) < 8:
         return Response(
@@ -130,16 +123,229 @@ def registerView(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class LoginView(APIView):
-#     def post(self, request):
-#         email = request.data.get('email')
-#         password = request.data.get('password')
+@extend_schema(
+    tags=["Auth"],
+    summary="Confirmer l'email de l'utilisateur et le connecter automatiquement",
+    description="Valide le jeton de confirmation. Si valide, active le compte et retourne une paire de jetons JWT (Access/Refresh).",
+    responses={
+        200: inline_serializer(
+            name="ConfirmationSuccess",
+            fields={
+                "message": drf_serializers.CharField(),
+                "access": drf_serializers.CharField(),
+                "refresh": drf_serializers.CharField(),
+            }
+        ),
+        400: inline_serializer(
+            name="ConfirmationError",
+            fields={
+                "error": drf_serializers.CharField(),
+                "email": drf_serializers.EmailField(required=False),
+            }
+        ),
+    },
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def confirm_register(request, uidb64, token):
+    
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response({"error": "Lien de confirmation invalide."}, status=status.HTTP_400_BAD_REQUEST)
 
-#         user = authenticate(request, username=email, password=password)
-#         if not user:
-#             return Response({'error': 'Identifiants incorrects'}, status=status.HTTP_401_UNAUTHORIZED)
+    if not email_confirmation_token_generator.check_token(user, token):
+        return Response({
+            "error": "Lien de confirmation invalide ou expiré.",
+            "email": user.email
+        }, status=status.HTTP_400_BAD_REQUEST)
 
-#         return Response(get_tokens(user))
+    if user.is_active:
+        refresh = TokenObtainPairSerializer.get_token(user)
+        return Response({
+            "message": f"Bienvenue {user.name} !",
+            "access": str(refresh.access_token),
+            "refresh": str(refresh)
+        }, status=status.HTTP_200_OK)
+        
+    user.is_active = True
+    user.save()
+
+    refresh = TokenObtainPairSerializer.get_token(user)
+    access = str(refresh.access_token)
+    refresh_str = str(refresh)
+
+    return Response({
+        "message": f"Bienvenue {user.name} !",
+        "access": str(refresh.access_token),
+        "refresh": str(refresh)
+    }, status=status.HTTP_200_OK)
+
+
+@extend_schema(
+    tags=["Auth"],
+    summary="Connexion utilisateur avec envoi d'email",
+    description="Valide les identifiants de l'utilisateur (email/mot de passe). Si valides, envoie un email de notification de connexion et retourne les jetons JWT (Access/Refresh).",
+    request=inline_serializer(
+        name="LoginRequest",
+        fields={
+            "email": drf_serializers.EmailField(),
+            "password": drf_serializers.CharField(),
+        }
+    ),
+    responses={
+        200: inline_serializer(
+            name="LoginSuccess",
+            fields={
+                "message": drf_serializers.CharField(),
+                "access": drf_serializers.CharField(),
+                "refresh": drf_serializers.CharField(),
+            }
+        ),
+        400: inline_serializer(
+            name="LoginError",
+            fields={"error": drf_serializers.CharField()}
+        ),
+    },
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    email = request.data.get('email', '').strip().lower()
+    password = request.data.get('password', '')
+
+    if not email or not password:
+        return Response(
+            {"error": "L'email et le mot de passe sont obligatoires."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user = authenticate(request, username=email, password=password)
+    if not user:
+        return Response(
+            {"error": "Email ou mot de passe incorrect."},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    if not user.is_active:
+        try:
+            send_confirmation_email(user)
+        except:
+            _error_server()
+            
+        return Response(
+            {"error": "Ce compte n'est pas activé. Vérifiez votre boîte mail."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if not user.dfa:
+        refresh = TokenObtainPairSerializer.get_token(user)
+        return Response({
+            "message": f"Connexion réussie, bienvenue {user.name} .",
+            "dfa": user.dfa,
+            "access": str(refresh.access_token),
+            "refresh": str(refresh)
+        }, status=status.HTTP_200_OK)
+
+    code = str(random.randint(100000, 999999))
+    user.validate_code = code
+    user.save()
+    
+    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+    token = email_confirmation_token_generator.make_token(user)
+
+    # Envoi de l'email de notification
+    try:
+        send_login_email(user)
+    except:
+        _error_server()
+
+    return Response({
+        "message": "Connexion réussie. Un email de confirmation a été envoyé.",
+        "dfa": user.dfa,
+        "uid": uidb64,
+        "token": token
+    }, status=status.HTTP_200_OK)
+
+
+@extend_schema(
+    tags=["Auth"],
+    summary="Confirmer le code de connexion envoyé par email",
+    description="Valide le code de connexion envoyé par email. Si valide, retourne les jetons JWT (Access/Refresh).",
+    request=inline_serializer(
+        name="LoginConfirmationRequest",
+        fields={
+            "uidb64": drf_serializers.CharField(),
+            "token": drf_serializers.CharField(),
+            "code": drf_serializers.CharField(),
+        }
+    ),
+    responses={
+        200: inline_serializer(
+            name="LoginConfirmationSuccess",
+            fields={
+                "message": drf_serializers.CharField(),
+                "access": drf_serializers.CharField(),
+                "refresh": drf_serializers.CharField(),
+            }
+        ),
+        400: inline_serializer(
+            name="LoginConfirmationError",
+            fields={
+                "error": drf_serializers.CharField(),
+            }
+        ),
+    },
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def confirm_login(request):
+    uidb64 = request.data.get('uid', '')
+    token = request.data.get('token', '')
+    code = request.data.get('code', '')
+    
+    if not uidb64 or not token or not code:
+        return Response({"error": "Données de confirmation manquantes."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response({"error": "Lien de confirmation invalide."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not email_confirmation_token_generator.check_token(user, token):
+        return Response({
+            "error": "Lien de confirmation invalide ou expiré.",
+            "email": user.email
+        }, status=status.HTTP_400_BAD_REQUEST)
+        
+    if user.validate_code != code:
+        return Response({"error": "Code de confirmation incorrect."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user.validate_code = ''
+    user.save()
+
+    if user.is_active:
+        refresh = TokenObtainPairSerializer.get_token(user)
+        return Response({
+            "message": f"Connexion réussie, bienvenue {user.name} .",
+            "access": str(refresh.access_token),
+            "refresh": str(refresh)
+        }, status=status.HTTP_200_OK)
+        
+    user.is_active = True
+    user.save()
+
+    refresh = TokenObtainPairSerializer.get_token(user)
+    access = str(refresh.access_token)
+    refresh_str = str(refresh)
+
+    return Response({
+        "message": f"Connexion réussie, bienvenue {user.name} .", 
+        "access": access, 
+        "refresh": refresh_str
+    }, status=status.HTTP_200_OK)
 
 
 class OAuthView(APIView):
