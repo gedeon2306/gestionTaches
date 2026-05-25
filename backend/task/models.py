@@ -23,6 +23,8 @@ class User(AbstractBaseUser):
     image = models.CharField(max_length=500, blank=True, default="")
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    dfa = models.BooleanField(default=True)
+    validate_code = models.CharField(max_length=6, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
