@@ -348,6 +348,258 @@ def confirm_login(request):
     }, status=status.HTTP_200_OK)
 
 
+@extend_schema(
+    tags=["Auth"],
+    summary="Renvoyer un email (confirmation ou réinitialisation)",
+    description="Permet de renvoyer un email de confirmation pour l'inscription ou un email de réinitialisation de mot de passe. Ne divulgue pas si l'email existe ou non pour des raisons de sécurité.",
+    request=inline_serializer(
+        name="ResendEmailRequest",
+        fields={
+            "email": drf_serializers.EmailField(),
+            "action": drf_serializers.ChoiceField(choices=["inscription", "forgot-password"])
+        }
+    ),
+    responses={
+        200: inline_serializer(
+            name="ResendEmailSuccess",
+            fields={"message": drf_serializers.CharField()}
+        ),
+        400: inline_serializer(
+            name="ResendEmailError",
+            fields={"error": drf_serializers.CharField()}
+        ),
+    },
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def resend_email(request):
+    email = request.data.get('email', '').strip().lower()
+    action = request.data.get('action', '')
+
+    if not email:
+        return Response(
+            {"error": "L'adresse email est obligatoire."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        user = User.objects.get(email=email)
+
+        if action == "login":
+            if user.is_active:
+                user.validate_code = str(random.randint(100000, 999999))
+                user.save()
+                
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                token = email_confirmation_token_generator.make_token(user)
+                
+                try:
+                    send_login_email(user)
+                except:
+                    _error_server()
+                    
+                return Response({
+                    "message": "Un nouveau code a été envoyé à votre email.",
+                    "uid": uidb64,
+                    "token": token,
+                    },
+                    status=status.HTTP_200_OK
+                )
+        
+        elif action == "register":
+            if not user.is_active:
+                try:
+                    send_confirmation_email(user)
+                except:
+                    _error_server()
+                
+        elif action == "forgot-password":
+            if user.is_active:
+                try:
+                    send_password_reset_email(user)
+                except:
+                    _error_server()
+                
+        else:
+            return Response(
+                {"message": "Données invalides."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    except User.DoesNotExist:
+        pass
+
+    return Response(
+        {"message": "Un nouveau lien a été envoyé."},
+        status=status.HTTP_200_OK
+    )
+
+
+@extend_schema(
+    tags=["Auth"],
+    summary="Demander un email de réinitialisation de mot de passe",
+    description="Envoie un email de réinitialisation de mot de passe si l'email existe et est actif. Ne divulgue pas si l'email existe ou non pour des raisons de sécurité.",
+    request=inline_serializer(
+        name="ForgotPasswordRequest",
+        fields={
+            "email": drf_serializers.EmailField(),
+        }
+    ),
+    responses={
+        200: inline_serializer(
+            name="ForgotPasswordSuccess",
+            fields={"message": drf_serializers.CharField()}
+        ),
+        400: inline_serializer(
+            name="ForgotPasswordError",
+            fields={"error": drf_serializers.CharField()}
+        ),
+    },
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def forgot_password(request):
+    
+    email = request.data.get('email', '').strip().lower()
+
+    if not email:
+        return Response(
+            {"error": "L'adresse email est obligatoire."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        user = User.objects.get(email=email)
+
+        if user.is_active:
+            try:
+                send_password_reset_email(user)
+            except:
+                _error_server()
+        else:
+            pass
+
+    except User.DoesNotExist:
+        pass
+
+    return Response(
+        {"message": "Email de réinitialisation envoyé ! Vérifiez votre boîte mail."},
+        status=status.HTTP_200_OK
+    )
+
+
+@extend_schema(
+    tags=["Auth"],
+    summary="Confirmer le token pour reinitialiser le mot de passe",
+    description="Valide le token de réinitialisation de mot de passe. Si valide, retourne l'uid et le token pour permettre au frontend d'afficher un formulaire de nouveau mot de passe.",
+    request=inline_serializer(
+        name="PasswordConfirmRequest",
+        fields={
+            "uid": drf_serializers.CharField(),
+            "token": drf_serializers.CharField(),
+        }
+    ),
+    responses={
+        200: inline_serializer(
+            name="PasswordConfirmSuccess",
+            fields={"message": drf_serializers.CharField()}
+        ),
+        400: inline_serializer(
+            name="PasswordConfirmError",
+            fields={"error": drf_serializers.CharField()}
+        ),
+    },
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def confirm_password(request, uidb64, token):
+    
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response({"error": "Lien de confirmation invalide."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not email_confirmation_token_generator.check_token(user, token):
+        return Response({
+            "error": "Le lien de réinitialisation est invalide ou a expiré.",
+            "email": user.email
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(
+        {"uid": uid, "token": token},
+        status=status.HTTP_200_OK
+    )
+
+
+@extend_schema(
+    tags=["Auth"],
+    summary="Réinitialiser le mot de passe avec un token",
+    description="Valide le token de réinitialisation et change le mot de passe. Après set_password(), le token est automatiquement invalidé car Django utilise le hash du mot de passe dans le token.",
+    request=inline_serializer(
+        name="ResetPasswordConfirmRequest",
+        fields={
+            "uid": drf_serializers.CharField(),
+            "token": drf_serializers.CharField(),
+            "password": drf_serializers.CharField(),
+            "password_confirm": drf_serializers.CharField(),
+        }
+    ),
+    responses={
+        200: inline_serializer(
+            name="ResetPasswordConfirmSuccess",
+            fields={"message": drf_serializers.CharField()}
+        ),
+        400: inline_serializer(
+            name="ResetPasswordConfirmError",
+            fields={"error": drf_serializers.CharField()}
+        ),
+    },
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password_confirm(request):
+    
+    uid = request.data.get('uid', '')
+    token = request.data.get('token', '')
+    password = request.data.get('password', '')
+
+    if not uid or not token or not password:
+        return Response(
+            {"error": "Tous les champs sont obligatoires."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if len(password) < 8:
+        return Response(
+            {"error": "Le mot de passe doit contenir au moins 8 caractères."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        user_id = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=user_id)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response(
+            {"error": "Lien de confirmation invalide."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not email_confirmation_token_generator.check_token(user, token):
+        return Response(
+            {"error": "Le lien de réinitialisation est invalide ou a expiré."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user.set_password(password)
+    user.save()
+
+    return Response(
+        {"message": "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter."},
+        status=status.HTTP_200_OK
+    )
+
+
 class OAuthView(APIView):
     """
     Reçoit les infos OAuth depuis Next.js après que NextAuth
