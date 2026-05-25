@@ -1,41 +1,27 @@
 import requests
 
-# from django.shortcuts import render, redirect
-# from django.conf import settings
-# from django.db import models
-# from django.utils.encoding import force_bytes, force_str
-# from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-# from django.contrib.auth.models import BaseUserManager
-
-# from .tokens import email_confirmation_token_generator
-# from .email_utils import send_confirmation_email, send_password_reset_email, send_login_email, send_new_email_code
-
-# from rest_framework import status
-# from rest_framework.pagination import PageNumberPagination
-# from rest_framework.response import Response
-# from rest_framework.decorators import api_view, permission_classes
-# from rest_framework.permissions import AllowAny, IsAuthenticated
-
-# from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
-# from drf_spectacular.types import OpenApiTypes
-
-# from rest_framework import serializers as drf_serializers
-
-# from .models import User, Famille, Defunt, Paiement, LignePaiement
-# from .serializers import (
-#     UserSerializer, 
-#     FamilleSerializer, 
-#     DefuntSerializer, 
-#     PaiementSerializer, 
-#     LignePaiementSerializer,
-#     MyTokenObtainPairSerializer
-# )
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import render, redirect
+from django.conf import settings
+from django.db import models
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth import authenticate
+
+from .tokens import email_confirmation_token_generator
+from .email_utils import send_confirmation_email, send_password_reset_email, send_login_email, send_new_email_code
+
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import serializers as drf_serializers
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+
 from .models import User, Account
 from .serializers import RegisterSerializer, UserSerializer
 
@@ -51,15 +37,45 @@ def get_tokens(user):
 def landing_view(request):
     return render(request, "landing.html")
 
+@extend_schema(
+    tags=["Auth"],
+    summary="Créer un compte utilisateur",
+    description="Crée un nouvel utilisateur avec les données fournies. Envoie un email de confirmation pour activer le compte.",
+    request=UserSerializer,
+    responses={
+        201: inline_serializer(
+            name="RegisterSuccess",
+            fields={
+                "message": drf_serializers.CharField(),
+                "user": inline_serializer(
+                    name="RegisterUserInfo",
+                    fields={
+                        "email": drf_serializers.EmailField(),
+                        "name": drf_serializers.CharField(),
+                    }
+                ),
+            }
+        ),
+        400: inline_serializer(
+            name="RegisterError",
+            fields={
+                "errors": drf_serializers.DictField(
+                    child=drf_serializers.ListField(child=drf_serializers.CharField()),
+                    help_text="Dictionnaire des erreurs par champ"
+                )
+            }
+        ),
+    },
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+class RegisterView(request):
+    serializer = RegisterSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class RegisterView(APIView):
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        user = serializer.save()
-        return Response(get_tokens(user), status=status.HTTP_201_CREATED)
+    user = serializer.save()
+    return Response(get_tokens(user), status=status.HTTP_201_CREATED)
 
 
 class LoginView(APIView):
