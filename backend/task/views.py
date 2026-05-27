@@ -239,112 +239,11 @@ def login(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    if not user.dfa:
-        refresh = TokenObtainPairSerializer.get_token(user)
-        return Response({
-            "message": f"Connexion réussie, bienvenue {user.name} .",
-            "dfa": user.dfa,
-            "access": str(refresh.access_token),
-            "refresh": str(refresh)
-        }, status=status.HTTP_200_OK)
-
-    code = str(random.randint(100000, 999999))
-    user.validate_code = code
-    user.save()
-    
-    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-    token = email_confirmation_token_generator.make_token(user)
-
-    # Envoi de l'email de notification
-    try:
-        send_login_email(user)
-    except:
-        _error_server()
-
-    return Response({
-        "message": "Connexion réussie. Un email de confirmation a été envoyé.",
-        "dfa": user.dfa,
-        "uid": uidb64,
-        "token": token
-    }, status=status.HTTP_200_OK)
-
-
-@extend_schema(
-    tags=["Auth"],
-    summary="Confirmer le code de connexion envoyé par email",
-    description="Valide le code de connexion envoyé par email. Si valide, retourne les jetons JWT (Access/Refresh).",
-    request=inline_serializer(
-        name="LoginConfirmationRequest",
-        fields={
-            "uidb64": drf_serializers.CharField(),
-            "token": drf_serializers.CharField(),
-            "code": drf_serializers.CharField(),
-        }
-    ),
-    responses={
-        200: inline_serializer(
-            name="LoginConfirmationSuccess",
-            fields={
-                "message": drf_serializers.CharField(),
-                "access": drf_serializers.CharField(),
-                "refresh": drf_serializers.CharField(),
-            }
-        ),
-        400: inline_serializer(
-            name="LoginConfirmationError",
-            fields={
-                "error": drf_serializers.CharField(),
-            }
-        ),
-    },
-)
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def confirm_login(request):
-    uidb64 = request.data.get('uid', '')
-    token = request.data.get('token', '')
-    code = request.data.get('code', '')
-    
-    if not uidb64 or not token or not code:
-        return Response({"error": "Données de confirmation manquantes."}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        return Response({"error": "Lien de confirmation invalide."}, status=status.HTTP_400_BAD_REQUEST)
-
-    if not email_confirmation_token_generator.check_token(user, token):
-        return Response({
-            "error": "Lien de confirmation invalide ou expiré.",
-            "email": user.email
-        }, status=status.HTTP_400_BAD_REQUEST)
-        
-    if user.validate_code != code:
-        return Response({"error": "Code de confirmation incorrect."}, status=status.HTTP_400_BAD_REQUEST)
-    
-    user.validate_code = ''
-    user.save()
-
-    if user.is_active:
-        refresh = TokenObtainPairSerializer.get_token(user)
-        return Response({
-            "message": f"Connexion réussie, bienvenue {user.name} .",
-            "access": str(refresh.access_token),
-            "refresh": str(refresh)
-        }, status=status.HTTP_200_OK)
-        
-    user.is_active = True
-    user.save()
-
     refresh = TokenObtainPairSerializer.get_token(user)
-    access = str(refresh.access_token)
-    refresh_str = str(refresh)
-
     return Response({
-        "message": f"Connexion réussie, bienvenue {user.name} .", 
-        "access": access, 
-        "refresh": refresh_str
+        "message": f"Connexion réussie, bienvenue {user.name} .",
+        "access": str(refresh.access_token),
+        "refresh": str(refresh)
     }, status=status.HTTP_200_OK)
 
 
@@ -385,28 +284,7 @@ def resend_email(request):
     try:
         user = User.objects.get(email=email)
 
-        if action == "login":
-            if user.is_active:
-                user.validate_code = str(random.randint(100000, 999999))
-                user.save()
-                
-                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-                token = email_confirmation_token_generator.make_token(user)
-                
-                try:
-                    send_login_email(user)
-                except:
-                    _error_server()
-                    
-                return Response({
-                    "message": "Un nouveau code a été envoyé à votre email.",
-                    "uid": uidb64,
-                    "token": token,
-                    },
-                    status=status.HTTP_200_OK
-                )
-        
-        elif action == "register":
+        if action == "register":
             if not user.is_active:
                 try:
                     send_confirmation_email(user)
@@ -660,10 +538,3 @@ class OAuthView(APIView):
             )
 
         return Response(get_tokens(user))
-
-
-# class MeView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response(UserSerializer(request.user).data)

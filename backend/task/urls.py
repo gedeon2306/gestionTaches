@@ -3,8 +3,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     register, 
     confirm_register,
-    login, 
-    confirm_login,
+    login,
     resend_email,
     forgot_password,
     confirm_password,
@@ -23,9 +22,6 @@ urlpatterns = [
     
     # Connexion (envoi du mail avec le code de connexion)
     path('auth/login/', login, name='login'),
-    
-    # Confirmation de la connexion (Génère le JWT Access et Refresh)
-    path('auth/confirm-login/', confirm_login, name='confirm_login'),
     
     # Rafraîchir le token (quand le premier expire)
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
