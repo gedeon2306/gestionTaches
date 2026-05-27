@@ -20,29 +20,47 @@ const handler = NextAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
 
-    // ─── Email / Password ───
+    // ─── Email / Password (login + confirm-login) ───
+    // Le champ `type` permet de distinguer les deux cas :
+    //   - "login"         → connexion normale, Django vérifie email + password
+    //   - "confirm-login" → appelé depuis /api/confirm-login après confirmation email,
+    //                       on reçoit directement les tokens Django (pas de password)
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email:    { label: "Email",    type: "email"    },
-        password: { label: "Password", type: "password" },
+        email:        { label: "Email",    type: "email"    },
+        password:     { label: "Password", type: "password" },
+        type:         { label: "Type",     type: "text"     }, // "login" | "confirm-login"
+        accessToken:  { label: "Access",   type: "text"     }, // confirm-login only
+        refreshToken: { label: "Refresh",  type: "text"     }, // confirm-login only
       },
       async authorize(credentials) {
         try {
+          // ── Cas 1 : confirmation email → les tokens Django arrivent directement ──
+          if (credentials?.type === "confirm-login") {
+            if (!credentials.accessToken || !credentials.refreshToken) return null
+            return {
+              id:                 credentials.email ?? "confirmed-user",
+              email:              credentials.email ?? "",
+              djangoAccessToken:  credentials.accessToken,
+              djangoRefreshToken: credentials.refreshToken,
+            }
+          }
+
+          // ── Cas 2 : login classique → Django valide email + password ──
           const res = await api.post('auth/login/', {
             email:    credentials?.email,
             password: credentials?.password,
           })
 
           const data = res.data
-
           return {
-            id:                  credentials!.email,
-            email:               credentials!.email,
+            id:                 credentials!.email,
+            email:              credentials!.email,
             djangoAccessToken:  data.access,
             djangoRefreshToken: data.refresh,
           }
-        } catch (error) {
+        } catch {
           return null
         }
       },
@@ -51,26 +69,24 @@ const handler = NextAuth({
 
   callbacks: {
     // ─── Appelé juste après OAuth Google/GitHub ───
-    // On envoie les infos OAuth à Django pour qu'il crée/retrouve le user
     async signIn({ user, account }) {
       if (account?.provider === "google" || account?.provider === "github") {
         try {
           const res = await api.post('auth/oauth/', {
-              provider:            account.provider,
-              provider_account_id: account.providerAccountId,
-              access_token:        account.access_token,
-              refresh_token:       account.refresh_token  ?? "",
-              expires_at:          account.expires_at     ?? null,
-              token_type:          account.token_type     ?? "",
-              scope:               account.scope          ?? "",
-              id_token:            account.id_token       ?? "",
-              email:               user.email,
-              name:                user.name,
-              image:               user.image,
-            })
+            provider:            account.provider,
+            provider_account_id: account.providerAccountId,
+            access_token:        account.access_token,
+            refresh_token:       account.refresh_token  ?? "",
+            expires_at:          account.expires_at     ?? null,
+            token_type:          account.token_type     ?? "",
+            scope:               account.scope          ?? "",
+            id_token:            account.id_token       ?? "",
+            email:               user.email,
+            name:                user.name,
+            image:               user.image,
+          })
 
           const data = res.data
-          // On stocke les JWT Django dans l'objet user (temporaire, passage vers jwt callback)
           ;(user as any).djangoAccessToken  = data.access
           ;(user as any).djangoRefreshToken = data.refresh
 
