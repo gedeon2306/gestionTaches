@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { FiArrowRight } from 'react-icons/fi';
+import axios from 'axios';
 import { AuthLayout, OAuthButtons, FormField, Spinner, PasswordStrength } from '@/src/components/auth';
 import AuthSkeleton from '@/src/components/uxComponents/AuthSkeleton';
 import { useSession } from 'next-auth/react';
@@ -35,10 +36,10 @@ export default function RegisterPage() {
   const handleOAuth = (provider: 'google' | 'github') => {
     if (provider === 'google') {
       setLoadingGoogle(true);
-      signIn("google", { callbackUrl: "/dashboard" });
+      signIn("google", { callbackUrl: ROUTES.DASHBOARD.ROOT });
     } else {
       setLoadingGithub(true);
-      signIn("github", { callbackUrl: "/dashboard" });
+      signIn("github", { callbackUrl: ROUTES.DASHBOARD.ROOT });
     }
   };
 
@@ -47,34 +48,19 @@ export default function RegisterPage() {
     setLoadingForm(true);
     setError("");
 
-    // 1. Créer le compte via Django
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register/`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      await axios.post('/api/register', { name, email, password });
 
-    if (!res.ok) {
-      const data = await res.json();
-      // Récupère la première erreur retournée par le serializer
-      const firstError = Object.values(data)[0];
-      setError(Array.isArray(firstError) ? firstError[0] : String(firstError));
+      router.push(
+        `${ROUTES.AUTH.EMAIL_SEND}?email=${encodeURIComponent(email)}&action=register`
+      );
+
+    } catch (error: any) {
+      const data = error?.response?.data;
+      const firstError = data ? Object.values(data)[0] : null;
+      setError(Array.isArray(firstError) ? firstError[0] : String(firstError ?? "Une erreur est survenue."));
+    } finally {
       setLoadingForm(false);
-      return
-    }
-
-    // 2. Connexion automatique après inscription
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (result?.ok) {
-      router.push("/dashboard");
-    } else {
-      setError("Inscription réussie mais connexion échouée, connecte-toi manuellement.");
-      router.push("/login");
     }
   };
 
@@ -85,7 +71,6 @@ export default function RegisterPage() {
       footerText="Déjà un compte ?"
       footerLink={{ text: 'Se connecter', href: '/auth/login' }}
     >
-      {/* OAuth */}
       <OAuthButtons
         loadingGoogle={loadingGoogle}
         loadingGithub={loadingGithub}
@@ -95,16 +80,13 @@ export default function RegisterPage() {
         githubText="S'inscrire avec GitHub"
       />
 
-      {/* Divider */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0' }}>
         <div style={{ flex: 1, height: 1, background: '#e8e6e1' }} />
         <span style={{ fontSize: 11.5, color: '#b0aeaa' }}>ou</span>
         <div style={{ flex: 1, height: 1, background: '#e8e6e1' }} />
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        {/* Name */}
         <FormField
           type="text"
           label="Nom complet"
@@ -117,7 +99,6 @@ export default function RegisterPage() {
           fieldName="name"
         />
 
-        {/* Email */}
         <FormField
           type="email"
           label="Email"
@@ -130,7 +111,6 @@ export default function RegisterPage() {
           fieldName="email"
         />
 
-        {/* Password */}
         <div>
           <FormField
             type="password"
@@ -149,12 +129,10 @@ export default function RegisterPage() {
           <PasswordStrength password={password} />
         </div>
 
-        {/* Error message */}
         {error && (
           <p style={{ color: 'red', fontSize: 12, marginTop: 5 }}>{error}</p>
         )}
 
-        {/* Terms */}
         <p style={{ fontSize: 11.5, color: '#b0aeaa', lineHeight: 1.5, margin: '2px 0 0' }}>
           En créant un compte, vous acceptez nos{' '}
           <a href="#" style={{ color: '#888580', textDecoration: 'underline', textDecorationColor: '#e8e6e1' }}>conditions</a>
@@ -162,7 +140,6 @@ export default function RegisterPage() {
           <a href="#" style={{ color: '#888580', textDecoration: 'underline', textDecorationColor: '#e8e6e1' }}>politique de confidentialité</a>.
         </p>
 
-        {/* Submit */}
         <motion.button
           whileTap={{ scale: 0.98 }}
           type="submit"
@@ -175,10 +152,10 @@ export default function RegisterPage() {
             border: '1px solid #1a1a1a',
             borderRadius: 9,
             fontSize: 12.5, fontWeight: 500, color: '#fff',
-            cursor: (loadingForm) ? 'not-allowed' : 'pointer',
+            cursor: loadingForm ? 'not-allowed' : 'pointer',
             transition: 'background 0.15s',
             fontFamily: "'DM Sans', sans-serif",
-            opacity: (loadingForm) ? 0.6 : 1,
+            opacity: loadingForm ? 0.6 : 1,
           }}
           onMouseEnter={e => { if (!loadingForm) (e.currentTarget as HTMLButtonElement).style.background = '#333'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1a1a1a'; }}
