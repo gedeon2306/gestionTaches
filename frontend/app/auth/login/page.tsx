@@ -34,10 +34,10 @@ export default function LoginPage() {
   const handleOAuth = (provider: 'google' | 'github') => {
     if (provider === 'google') {
       setLoadingGoogle(true);
-      signIn("google", { callbackUrl: "/dashboard" });
+      signIn("google", { callbackUrl: ROUTES.DASHBOARD.ROOT });
     } else {
       setLoadingGithub(true);
-      signIn("github", { callbackUrl: "/dashboard" });
+      signIn("github", { callbackUrl: ROUTES.DASHBOARD.ROOT });
     }
   };
 
@@ -49,14 +49,14 @@ export default function LoginPage() {
     const result = await signIn("credentials", {
       email,
       password,
-      redirect: false,    // on gère la redirection nous-mêmes
+      redirect: false,
     });
 
     if (result?.error) {
       setError("Email ou mot de passe incorrect");
       setLoadingForm(false);
     } else {
-      router.push("/dashboard");
+      router.push(ROUTES.DASHBOARD.ROOT);
     }
   };
 
