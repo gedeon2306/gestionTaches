@@ -166,7 +166,8 @@ def confirm_register(request, uidb64, token):
         return Response({
             "message": f"Bienvenue {user.name} !",
             "access": str(refresh.access_token),
-            "refresh": str(refresh)
+            "refresh": str(refresh),
+            "email": user.email,
         }, status=status.HTTP_200_OK)
         
     user.is_active = True

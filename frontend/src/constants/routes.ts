@@ -5,7 +5,6 @@ export const ROUTES = {
     REGISTER: '/auth/register',
     EMAIL_SEND: '/auth/email-send',
     CONFIRM: '/auth/confirm',
-    CONFIRM_CODE: '/auth/confirm-code',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
   },
