@@ -2,12 +2,13 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, Suspense } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import axios from "axios";
 import { ROUTES } from "@/src/constants/routes";
 import toast from "react-hot-toast";
 import { motion } from "motion/react";
-import { AuthLayout, Spinner } from "@/src/components/auth";
+import { AuthLayout, Spinner } from '@/src/components/auth';
+import AuthSkeleton from '@/src/components/uxComponents/AuthSkeleton';
 
 function ConfirmContent() {
   const router = useRouter();
@@ -77,6 +78,17 @@ function ConfirmContent() {
 }
 
 export default function ConfirmPage() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push(ROUTES.DASHBOARD.ROOT);
+    }
+  }, [status]);
+
+  if (status === "loading") return <AuthSkeleton />;
+
   return (
     <AuthLayout
       title="Confirmation en cours"

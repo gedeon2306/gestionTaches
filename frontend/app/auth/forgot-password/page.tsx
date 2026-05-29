@@ -1,19 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { motion } from 'motion/react';
 import { FiArrowRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { AuthLayout, FormField, Spinner } from '@/src/components/auth';
+import AuthSkeleton from '@/src/components/uxComponents/AuthSkeleton';
 import { ROUTES } from '@/src/constants/routes';
 
 export default function ForgotPasswordPage() {
+  const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
   const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push(ROUTES.DASHBOARD.ROOT);
+    }
+  }, [status]);
+
+  if (status === "loading") return <AuthSkeleton />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

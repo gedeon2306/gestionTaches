@@ -2,11 +2,13 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { motion } from 'motion/react';
 import { FiMail, FiClock, FiRefreshCw } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { AuthLayout, Spinner } from '@/src/components/auth';
+import AuthSkeleton from '@/src/components/uxComponents/AuthSkeleton';
 import { ROUTES } from '@/src/constants/routes';
 
 function EmailSentContent() {
@@ -185,6 +187,17 @@ function EmailSentContent() {
 }
 
 export default function EmailSendPage() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push(ROUTES.DASHBOARD.ROOT);
+    }
+  }, [status, router]);
+
+  if (status === "loading") return <AuthSkeleton />;
+
   return (
     <AuthLayout
       title="Email envoyé"
