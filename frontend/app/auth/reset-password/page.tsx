@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { motion } from 'motion/react';
 import { FiArrowRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
@@ -151,6 +152,17 @@ function ResetPasswordContent() {
 }
 
 export default function ResetPasswordPage() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push(ROUTES.DASHBOARD.ROOT);
+    }
+  }, [status]);
+
+  if (status === "loading") return <AuthSkeleton />;
+
   return (
     <AuthLayout
       title="Nouveau mot de passe"
