@@ -9,6 +9,7 @@ import { AuthLayout, OAuthButtons, FormField, Spinner } from '@/src/components/a
 import AuthSkeleton from '@/src/components/uxComponents/AuthSkeleton';
 import { useSession } from 'next-auth/react';
 import { ROUTES } from '@/src/constants/routes';
+import Link from "next/link";
 
 export default function LoginPage() {
   const { status } = useSession();
@@ -105,11 +106,11 @@ export default function LoginPage() {
             <label style={{ fontSize: 11.5, fontWeight: 500, color: '#888580', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
               Mot de passe
             </label>
-            <a href="#" style={{ fontSize: 11.5, color: '#888580', textDecoration: 'none' }}
+            <Link href={ROUTES.AUTH.FORGOT_PASSWORD} style={{ fontSize: 11.5, color: '#888580', textDecoration: 'none' }}
               onMouseEnter={e => { (e.target as HTMLAnchorElement).style.color = '#1a1a1a'; }}
               onMouseLeave={e => { (e.target as HTMLAnchorElement).style.color = '#888580'; }}>
               Oublié ?
-            </a>
+            </Link>
           </div>
           <FormField
             type="password"
