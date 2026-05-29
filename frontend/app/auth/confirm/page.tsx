@@ -8,7 +8,6 @@ import { ROUTES } from "@/src/constants/routes";
 import toast from "react-hot-toast";
 import { motion } from "motion/react";
 import { AuthLayout, Spinner } from '@/src/components/auth';
-import AuthSkeleton from '@/src/components/uxComponents/AuthSkeleton';
 
 function ConfirmContent() {
   const router = useRouter();
@@ -87,7 +86,7 @@ export default function ConfirmPage() {
     }
   }, [status]);
 
-  if (status === "loading") return <AuthSkeleton />;
+  if (status === "loading") return <Spinner color="#1a1a1a" />;
 
   return (
     <AuthLayout
