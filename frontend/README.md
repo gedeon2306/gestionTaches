@@ -2,7 +2,7 @@
 
 L'interface utilisateur moderne et réactive de l'application de gestion de tâches construite avec Next.js 16.2.4 et TypeScript.
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Une application web moderne et professionnelle avec authentification sécurisée, gestion complète des utilisateurs et interface intuitive pour la gestion de tâches et de projets.
 
