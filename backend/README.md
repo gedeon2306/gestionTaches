@@ -253,7 +253,7 @@ python manage.py runserver
 L'API sera disponible sur `http://localhost:8000`
 Documentation : `http://localhost:8000/api/docs/`
 
-## 📝 Migrations
+## Migrations
 
 Migrations disponibles :
 - `0001_initial.py` - Modèles initiaux (User, Account, UserProfil)
