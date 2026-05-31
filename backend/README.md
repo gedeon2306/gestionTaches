@@ -14,7 +14,7 @@ Ce backend fournit une API complète et sécurisée pour gérer les utilisateurs
 - **Email** : Support SMTP pour confirmations et notifications
 - **Sécurité** : CORS, throttling, validation, hachage de mots de passe
 
-## 🗄️ Modèles de données
+## Modèles de données
 
 ### User
 - Modèle d'utilisateur personnalisé avec authentification par email
