@@ -435,7 +435,7 @@ GITHUB_CLIENT_ID=xxx
 GITHUB_CLIENT_SECRET=xxx
 ```
 
-## 🔒 Sécurité
+## Sécurité
 
 - **NextAuth Session** : Sécurisée avec cookies signés
 - **CSRF Protection** : NextAuth.js prend en charge
@@ -443,7 +443,7 @@ GITHUB_CLIENT_SECRET=xxx
 - **Secrets** : Jamais exposés côté client (prefixe NEXT_PUBLIC_)
 - **Tokens JWT** : Stockés dans la session sécurisée
 
-## 🐛 Dépannage
+## Dépannage
 
 ### Le backend n'est pas accessible
 ```bash
@@ -466,7 +466,7 @@ GITHUB_CLIENT_SECRET=xxx
 # Vérifier la configuration dans .env.local
 ```
 
-## 📦 Dépendances principales
+## Dépendances principales
 
 Voir `package.json` pour la version exacte.
 
