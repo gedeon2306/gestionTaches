@@ -294,7 +294,7 @@ python manage.py test --verbosity=2
 - **ReDoc** : `http://localhost:8000/api/redoc/`
 - **OpenAPI Schema** : `http://localhost:8000/api/schema/`
 
-## 🔒 Sécurité
+## Sécurité
 
 - **CORS** : Configuré pour localhost et domaines autorisés
 - **Throttling** : Rate limiting par IP
