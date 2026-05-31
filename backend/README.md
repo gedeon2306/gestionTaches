@@ -322,7 +322,7 @@ python manage.py clear_cache
 python manage.py createsuperuser
 ```
 
-## 📦 Dépendances principales
+## Dépendances principales
 
 - **Django 6.0.3** - Framework web
 - **djangorestframework 3.17.1** - REST API
