@@ -211,7 +211,7 @@ PATCH  /api/team/<id>/                  - Mettre à jour
 DELETE /api/team/<id>/                  - Supprimer
 ```
 
-## 🚀 Installation et Démarrage
+## Installation et Démarrage
 
 ### Prérequis
 - Python 3.8+
