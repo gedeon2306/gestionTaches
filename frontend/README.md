@@ -417,7 +417,7 @@ npm run test:coverage
 ### TypeScript + React
 - [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/)
 
-## 📋 Environment Variables (.env.local)
+## Environment Variables (.env.local)
 
 ```env
 # NextAuth Configuration
