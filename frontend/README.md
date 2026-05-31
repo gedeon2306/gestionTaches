@@ -391,7 +391,7 @@ signIn('github');
 signOut({ callbackUrl: '/' });
 ```
 
-## 🧪 Tests
+## Tests
 
 ```bash
 # Tests unitaires (si configuré)
