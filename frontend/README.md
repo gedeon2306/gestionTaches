@@ -104,7 +104,7 @@ Configuration
 └── postcss.config.mjs            # Configuration PostCSS
 ```
 
-## 🔐 Authentification avec NextAuth
+## Authentification avec NextAuth
 
 ### Configuration (app/api/auth/[...nextauth]/route.ts)
 
@@ -166,7 +166,7 @@ const { data: session, status } = useSession();
    - Pages dashboard nécessitent authentification
    - Loading state avec AuthSkeleton
 
-## 📱 Pages et Composants
+## Pages et Composants
 
 ### Pages d'authentification (✓ Complètes)
 
