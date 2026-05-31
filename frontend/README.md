@@ -284,7 +284,7 @@ yarn dev
 # http://localhost:3000
 ```
 
-## 📦 Scripts NPM
+## Scripts NPM
 
 ```bash
 # Développement
@@ -302,7 +302,7 @@ npm run lint --fix       # Corriger les erreurs ESLint
 npm run type-check       # Vérifier types TypeScript (si configuré)
 ```
 
-## 🔗 API Integration
+## API Integration
 
 ### Configuration API (src/constants/api.ts)
 
