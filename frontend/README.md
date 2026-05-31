@@ -225,7 +225,7 @@ Pages :
 - `/dashboard/settings` - Paramètres
 - `/dashboard/searchUsers` - Recherche utilisateurs
 
-## 🎨 Composants réutilisables
+## Composants réutilisables
 
 ### AuthLayout
 Wrapper pour les pages d'authentification avec titre, sous-titre et footer.
