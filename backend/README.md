@@ -2,7 +2,7 @@
 
 L'API REST du système de gestion de tâches construit avec Django 6.0.3 et Django REST Framework.
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Ce backend fournit une API complète et sécurisée pour gérer les utilisateurs, les tâches, les projets et les équipes avec authentification JWT et OAuth intégrée.
 
