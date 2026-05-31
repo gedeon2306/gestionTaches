@@ -2,7 +2,7 @@
 
 L'interface utilisateur moderne et réactive de l'application de gestion de tâches construite avec Next.js 16.2.4 et TypeScript.
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Une application web moderne et professionnelle avec authentification sécurisée, gestion complète des utilisateurs et interface intuitive pour la gestion de tâches et de projets.
 
@@ -17,7 +17,7 @@ Une application web moderne et professionnelle avec authentification sécurisée
 - **Icons** : React Icons 5.6.0
 - **Linting** : ESLint 9 + Next.js config
 
-## 🏗️ Structure des dossiers
+## Structure des dossiers
 
 ```
 app/
@@ -104,7 +104,7 @@ Configuration
 └── postcss.config.mjs            # Configuration PostCSS
 ```
 
-## 🔐 Authentification avec NextAuth
+## Authentification avec NextAuth
 
 ### Configuration (app/api/auth/[...nextauth]/route.ts)
 
@@ -166,7 +166,7 @@ const { data: session, status } = useSession();
    - Pages dashboard nécessitent authentification
    - Loading state avec AuthSkeleton
 
-## 📱 Pages et Composants
+## Pages et Composants
 
 ### Pages d'authentification (✓ Complètes)
 
@@ -225,7 +225,7 @@ Pages :
 - `/dashboard/settings` - Paramètres
 - `/dashboard/searchUsers` - Recherche utilisateurs
 
-## 🎨 Composants réutilisables
+## Composants réutilisables
 
 ### AuthLayout
 Wrapper pour les pages d'authentification avec titre, sous-titre et footer.
@@ -249,7 +249,7 @@ Spinner de chargement personnalisé avec couleur configurable.
 ### AuthSkeleton
 Skeleton loading pour pages d'authentification.
 
-## 🚀 Installation et Démarrage
+## Installation et Démarrage
 
 ### Prérequis
 - Node.js 18+
@@ -284,7 +284,7 @@ yarn dev
 # http://localhost:3000
 ```
 
-## 📦 Scripts NPM
+## Scripts NPM
 
 ```bash
 # Développement
@@ -302,7 +302,7 @@ npm run lint --fix       # Corriger les erreurs ESLint
 npm run type-check       # Vérifier types TypeScript (si configuré)
 ```
 
-## 🔗 API Integration
+## API Integration
 
 ### Configuration API (src/constants/api.ts)
 
@@ -347,7 +347,7 @@ export const ROUTES = {
 };
 ```
 
-## 🎯 Appels API côté client
+## Appels API côté client
 
 ### Exemple avec Axios
 
@@ -391,7 +391,7 @@ signIn('github');
 signOut({ callbackUrl: '/' });
 ```
 
-## 🧪 Tests
+## Tests
 
 ```bash
 # Tests unitaires (si configuré)
@@ -404,7 +404,7 @@ npm run test:e2e
 npm run test:coverage
 ```
 
-## 📚 Documentation
+## Documentation
 
 ### NextAuth.js
 - [Documentation officielle](https://next-auth.js.org/)
@@ -417,7 +417,7 @@ npm run test:coverage
 ### TypeScript + React
 - [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/)
 
-## 📋 Environment Variables (.env.local)
+## Environment Variables (.env.local)
 
 ```env
 # NextAuth Configuration
@@ -435,7 +435,7 @@ GITHUB_CLIENT_ID=xxx
 GITHUB_CLIENT_SECRET=xxx
 ```
 
-## 🔒 Sécurité
+## Sécurité
 
 - **NextAuth Session** : Sécurisée avec cookies signés
 - **CSRF Protection** : NextAuth.js prend en charge
@@ -443,7 +443,7 @@ GITHUB_CLIENT_SECRET=xxx
 - **Secrets** : Jamais exposés côté client (prefixe NEXT_PUBLIC_)
 - **Tokens JWT** : Stockés dans la session sécurisée
 
-## 🐛 Dépannage
+## Dépannage
 
 ### Le backend n'est pas accessible
 ```bash
@@ -466,7 +466,7 @@ GITHUB_CLIENT_SECRET=xxx
 # Vérifier la configuration dans .env.local
 ```
 
-## 📦 Dépendances principales
+## Dépendances principales
 
 Voir `package.json` pour la version exacte.
 
