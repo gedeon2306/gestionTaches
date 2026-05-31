@@ -272,7 +272,7 @@ python manage.py migrate
 python manage.py showmigrations
 ```
 
-## 🧪 Tests
+## Tests
 
 ```bash
 # Lancer tous les tests
