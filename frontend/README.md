@@ -404,7 +404,7 @@ npm run test:e2e
 npm run test:coverage
 ```
 
-## 📚 Documentation
+## Documentation
 
 ### NextAuth.js
 - [Documentation officielle](https://next-auth.js.org/)
