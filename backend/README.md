@@ -2,7 +2,7 @@
 
 L'API REST du système de gestion de tâches construit avec Django 6.0.3 et Django REST Framework.
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Ce backend fournit une API complète et sécurisée pour gérer les utilisateurs, les tâches, les projets et les équipes avec authentification JWT et OAuth intégrée.
 
@@ -14,7 +14,7 @@ Ce backend fournit une API complète et sécurisée pour gérer les utilisateurs
 - **Email** : Support SMTP pour confirmations et notifications
 - **Sécurité** : CORS, throttling, validation, hachage de mots de passe
 
-## 🗄️ Modèles de données
+## Modèles de données
 
 ### User
 - Modèle d'utilisateur personnalisé avec authentification par email
@@ -124,7 +124,7 @@ Fields: id, project (FK), title, description, status, priority, assignee (FK), d
 Fields: id, team (FK), sender (FK), recipient (FK), type, status, message, created_at, responded_at
 ```
 
-## 🔐 Authentification
+## Authentification
 
 ### Email/Mot de passe
 1. **Inscription** : POST `/api/auth/register/`
@@ -164,7 +164,7 @@ Fields: id, team (FK), sender (FK), recipient (FK), type, status, message, creat
 - **Refresh Token** : JWT valide 7 jours (configurable)
 - **Email Token** : Tokens de confirmation (10 minutes)
 
-## 🔗 Endpoints API
+## Endpoints API
 
 ### Authentification (Implémentés ✓)
 ```
@@ -211,7 +211,7 @@ PATCH  /api/team/<id>/                  - Mettre à jour
 DELETE /api/team/<id>/                  - Supprimer
 ```
 
-## 🚀 Installation et Démarrage
+## Installation et Démarrage
 
 ### Prérequis
 - Python 3.8+
@@ -253,7 +253,7 @@ python manage.py runserver
 L'API sera disponible sur `http://localhost:8000`
 Documentation : `http://localhost:8000/api/docs/`
 
-## 📝 Migrations
+## Migrations
 
 Migrations disponibles :
 - `0001_initial.py` - Modèles initiaux (User, Account, UserProfil)
@@ -272,7 +272,7 @@ python manage.py migrate
 python manage.py showmigrations
 ```
 
-## 🧪 Tests
+## Tests
 
 ```bash
 # Lancer tous les tests
@@ -288,13 +288,13 @@ python manage.py test task.tests.MyTestCase
 python manage.py test --verbosity=2
 ```
 
-## 📚 Documentation
+## Documentation
 
 - **Swagger UI** : `http://localhost:8000/api/docs/`
 - **ReDoc** : `http://localhost:8000/api/redoc/`
 - **OpenAPI Schema** : `http://localhost:8000/api/schema/`
 
-## 🔒 Sécurité
+## Sécurité
 
 - **CORS** : Configuré pour localhost et domaines autorisés
 - **Throttling** : Rate limiting par IP
@@ -303,7 +303,7 @@ python manage.py test --verbosity=2
 - **Tokens** : JWT signés avec clé secrète
 - **CSRF** : Protection CSRF activée
 
-## 🛠️ Commandes Django utiles
+## Commandes Django utiles
 
 ```bash
 # Shell Django interactif
@@ -322,7 +322,7 @@ python manage.py clear_cache
 python manage.py createsuperuser
 ```
 
-## 📦 Dépendances principales
+## Dépendances principales
 
 - **Django 6.0.3** - Framework web
 - **djangorestframework 3.17.1** - REST API
