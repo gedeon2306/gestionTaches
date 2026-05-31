@@ -347,7 +347,7 @@ export const ROUTES = {
 };
 ```
 
-## 🎯 Appels API côté client
+## Appels API côté client
 
 ### Exemple avec Axios
 
