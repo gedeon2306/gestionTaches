@@ -164,7 +164,7 @@ Fields: id, team (FK), sender (FK), recipient (FK), type, status, message, creat
 - **Refresh Token** : JWT valide 7 jours (configurable)
 - **Email Token** : Tokens de confirmation (10 minutes)
 
-## 🔗 Endpoints API
+## Endpoints API
 
 ### Authentification (Implémentés ✓)
 ```
