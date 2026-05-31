@@ -17,7 +17,7 @@ Une application web moderne et professionnelle avec authentification sécurisée
 - **Icons** : React Icons 5.6.0
 - **Linting** : ESLint 9 + Next.js config
 
-## 🏗️ Structure des dossiers
+## Structure des dossiers
 
 ```
 app/
