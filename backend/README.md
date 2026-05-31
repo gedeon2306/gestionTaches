@@ -124,7 +124,7 @@ Fields: id, project (FK), title, description, status, priority, assignee (FK), d
 Fields: id, team (FK), sender (FK), recipient (FK), type, status, message, created_at, responded_at
 ```
 
-## 🔐 Authentification
+## Authentification
 
 ### Email/Mot de passe
 1. **Inscription** : POST `/api/auth/register/`
