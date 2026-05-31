@@ -303,7 +303,7 @@ python manage.py test --verbosity=2
 - **Tokens** : JWT signés avec clé secrète
 - **CSRF** : Protection CSRF activée
 
-## 🛠️ Commandes Django utiles
+## Commandes Django utiles
 
 ```bash
 # Shell Django interactif
