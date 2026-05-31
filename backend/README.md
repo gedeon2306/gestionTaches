@@ -288,7 +288,7 @@ python manage.py test task.tests.MyTestCase
 python manage.py test --verbosity=2
 ```
 
-## 📚 Documentation
+## Documentation
 
 - **Swagger UI** : `http://localhost:8000/api/docs/`
 - **ReDoc** : `http://localhost:8000/api/redoc/`
