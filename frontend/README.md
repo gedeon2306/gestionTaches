@@ -249,7 +249,7 @@ Spinner de chargement personnalisé avec couleur configurable.
 ### AuthSkeleton
 Skeleton loading pour pages d'authentification.
 
-## 🚀 Installation et Démarrage
+## Installation et Démarrage
 
 ### Prérequis
 - Node.js 18+
