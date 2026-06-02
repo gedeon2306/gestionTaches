@@ -301,7 +301,7 @@ GITHUB_CLIENT_SECRET=votre-github-client-secret
 4. Nouveau mot de passe défini → POST `/api/reset-password`
 5. Redirection vers la connexion
 
-## 📚 API Documentation
+## API Documentation
 
 Une fois le backend démarré, accédez à :
 - **Swagger UI** : `http://localhost:8000/api/docs/`
