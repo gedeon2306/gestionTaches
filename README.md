@@ -13,7 +13,7 @@ Ce projet est une application de gestion de tâches professionnelle construite a
 - **API Documentation** : OpenAPI/Swagger avec drf-spectacular 0.29.0
 - **Sécurité** : JWT tokens avec SimpleJWT 5.5.1, CORS configuré, rate limiting
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend (Django)
 - **Framework** : Django 6.0.3 + Django REST Framework 3.17.1
