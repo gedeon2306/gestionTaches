@@ -2,7 +2,7 @@
 
 Une application web full-stack moderne et complète pour la gestion de tâches, de projets et d'équipes avec authentification sécurisée et interface utilisateur moderne et réactive.
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Ce projet est une application de gestion de tâches professionnelle construite avec une architecture moderne :
 
@@ -13,7 +13,7 @@ Ce projet est une application de gestion de tâches professionnelle construite a
 - **API Documentation** : OpenAPI/Swagger avec drf-spectacular 0.29.0
 - **Sécurité** : JWT tokens avec SimpleJWT 5.5.1, CORS configuré, rate limiting
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend (Django)
 - **Framework** : Django 6.0.3 + Django REST Framework 3.17.1
@@ -39,7 +39,7 @@ Ce projet est une application de gestion de tâches professionnelle construite a
 - **Icons** : React Icons 5.6.0
 - **ESLint** : Configuration Next.js intégrée pour la qualité du code
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 ### Authentification (Complètement implémentée ✓)
 - **Inscription** : Email/mot de passe avec confirmation par email
@@ -69,7 +69,7 @@ Ce projet est une application de gestion de tâches professionnelle construite a
 - **Accessibilité** : Components bien structurés avec support clavier
 - **Dark/Light** : Support des thèmes (en préparation)
 
-## 📁 Structure du Projet
+## Structure du Projet
 
 ```
 gestionTaches/
@@ -227,7 +227,7 @@ gestionTaches/
    ```
    L'application sera disponible sur `http://localhost:3000`
 
-## ⚙️ Configuration
+## Configuration
 
 ### Variables d'environnement (Backend - .env)
 ```env
