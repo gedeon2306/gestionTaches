@@ -27,7 +27,6 @@ function ConfirmContent() {
     const confirm = async () => {
       try {
         if (action === "register") {
-          // 1. Django valide le token email et renvoie les JWT
           const confirmRes = await axios.post("/api/confirm", {
             uid,
             token,
@@ -35,8 +34,6 @@ function ConfirmContent() {
           });
           const { message, access, refresh, email } = confirmRes.data;
 
-          // 2. Création de la session NextAuth avec les tokens Django
-          //    On passe type="confirm-login" pour bypasser la vérification password
           const result = await signIn("credentials", {
             redirect: false,
             type: "confirm-login",
