@@ -370,7 +370,7 @@ docker-compose up -d
 
 Ce projet est sous licence MIT.
 
-## 🗺️ Roadmap
+## Roadmap
 
 ### Phase 1 : Authentification (✓ Complète)
 - [x] Inscription par email avec confirmation
