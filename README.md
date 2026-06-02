@@ -69,7 +69,7 @@ Ce projet est une application de gestion de tâches professionnelle construite a
 - **Accessibilité** : Components bien structurés avec support clavier
 - **Dark/Light** : Support des thèmes (en préparation)
 
-## 📁 Structure du Projet
+## Structure du Projet
 
 ```
 gestionTaches/
