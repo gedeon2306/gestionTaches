@@ -227,7 +227,7 @@ gestionTaches/
    ```
    L'application sera disponible sur `http://localhost:3000`
 
-## ⚙️ Configuration
+## Configuration
 
 ### Variables d'environnement (Backend - .env)
 ```env
@@ -301,7 +301,7 @@ GITHUB_CLIENT_SECRET=votre-github-client-secret
 4. Nouveau mot de passe défini → POST `/api/reset-password`
 5. Redirection vers la connexion
 
-## 📚 API Documentation
+## API Documentation
 
 Une fois le backend démarré, accédez à :
 - **Swagger UI** : `http://localhost:8000/api/docs/`
@@ -370,7 +370,7 @@ docker-compose up -d
 
 Ce projet est sous licence MIT.
 
-## 🗺️ Roadmap
+## Roadmap
 
 ### Phase 1 : Authentification (✓ Complète)
 - [x] Inscription par email avec confirmation
