@@ -2,7 +2,7 @@
 
 Une application web full-stack moderne et complète pour la gestion de tâches, de projets et d'équipes avec authentification sécurisée et interface utilisateur moderne et réactive.
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Ce projet est une application de gestion de tâches professionnelle construite avec une architecture moderne :
 
