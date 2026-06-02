@@ -39,7 +39,7 @@ Ce projet est une application de gestion de tâches professionnelle construite a
 - **Icons** : React Icons 5.6.0
 - **ESLint** : Configuration Next.js intégrée pour la qualité du code
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 ### Authentification (Complètement implémentée ✓)
 - **Inscription** : Email/mot de passe avec confirmation par email
