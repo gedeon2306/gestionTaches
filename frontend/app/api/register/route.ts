@@ -1,4 +1,3 @@
-// app/api/register/route.ts
 import { NextResponse } from 'next/server';
 import api from '@/src/constants/api';
 
