@@ -227,7 +227,7 @@ gestionTaches/
    ```
    L'application sera disponible sur `http://localhost:3000`
 
-## ⚙️ Configuration
+## Configuration
 
 ### Variables d'environnement (Backend - .env)
 ```env
