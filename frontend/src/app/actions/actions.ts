@@ -71,3 +71,11 @@ function messageFromErrorBody(data: unknown): string {
   if (parts.length) return parts.join(" ");
   return "L’opération a échoué.";
 }
+
+function messageFromSuccessBody(data: unknown): string | undefined {
+  if (data && typeof data === "object" && "message" in data) {
+    const m = (data as { message: unknown }).message;
+    if (typeof m === "string" && m.trim()) return m;
+  }
+  return undefined;
+}
