@@ -40,3 +40,13 @@ async function getToken(): Promise<string> {
   if (!token) throw new Error("Non authentifié");
   return token;
 }
+
+async function readFetchResponseJson(response: Response): Promise<unknown | null> {
+  const text = await response.text();
+  if (!text.trim()) return null;
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return null;
+  }
+}
