@@ -50,3 +50,24 @@ async function readFetchResponseJson(response: Response): Promise<unknown | null
     return null;
   }
 }
+
+function messageFromErrorBody(data: unknown): string {
+  if (data == null) return "L’opération a échoué.";
+  if (typeof data === "string") return data;
+  if (typeof data !== "object") return "L’opération a échoué.";
+  const o = data as Record<string, unknown>;
+  if (typeof o.error === "string") return o.error;
+  if (typeof o.message === "string") return o.message;
+  if (typeof o.detail === "string") return o.detail;
+  if (Array.isArray(o.detail) && o.detail.length > 0) {
+    const first = o.detail[0];
+    return typeof first === "string" ? first : String(first);
+  }
+  const parts: string[] = [];
+  for (const v of Object.values(o)) {
+    if (Array.isArray(v)) parts.push(...v.map(String));
+    else if (typeof v === "string") parts.push(v);
+  }
+  if (parts.length) return parts.join(" ");
+  return "L’opération a échoué.";
+}
