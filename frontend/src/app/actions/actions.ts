@@ -79,3 +79,10 @@ function messageFromSuccessBody(data: unknown): string | undefined {
   }
   return undefined;
 }
+
+/** Résultat des suppressions via fetch (DELETE). */
+export type DeleteEntityResult =
+  | { success: true; message?: string }
+  | { success: false; error: string }
+  | null;
+
