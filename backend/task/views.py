@@ -544,3 +544,31 @@ class OAuthView(APIView):
 
         return Response(get_tokens(user))
 
+
+
+@extend_schema(
+    tags=["Dashboard"],
+    summary="Récupérer les données du dashboard",
+    description="Retourne les statistiques, tâches récentes, projets et activité de l'utilisateur authentifié",
+    responses={
+        200: {
+            'type': 'object',
+            'properties': {
+                'user': {'type': 'object'},
+                'stats': {'type': 'object'},
+                'tasks': {'type': 'array'},
+                'projects': {'type': 'array'},
+                'week_data': {'type': 'array'},
+                'recent_activity': {'type': 'array'},
+            }
+        },
+        401: {'description': 'Non authentifié'},
+    }
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard(request):
+    """
+    Endpoint du dashboard retournant toutes les données nécessaires
+    """
+    
