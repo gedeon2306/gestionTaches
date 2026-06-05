@@ -633,4 +633,107 @@ def dashboard(request):
         ).distinct().count(),
     }
     
+    # ===== TÂCHES RÉCENTES =====
+    recent_tasks = Task.objects.filter(
+        Q(assignee=user) | Q(project__team__members=user)
+    ).select_related('project', 'assignee').order_by('-updated_at')[:6]
     
+    tasks_data = []
+    for task in recent_tasks:
+        tasks_data.append({
+            'id': str(task.id),
+            'title': task.title,
+            'project': task.project.name,
+            'status': task.status,
+            'priority': task.priority,
+            'due_date': task.due_date.strftime('%d %b') if task.due_date else None,
+            'assignee_name': task.assignee.name if task.assignee else 'Non assigné',
+            'assignee_initials': ''.join([n[0] for n in task.assignee.name.split()]) if task.assignee else 'NA',
+            'project_color': '#1a1a1a',
+        })
+    
+    # ===== PROJETS ACTIFS =====
+    user_projects = Project.objects.filter(
+        team__members=user,
+        status='active'
+    ).annotate(
+        total_tasks=Count('tasks'),
+        completed_tasks=Count('tasks', filter=Q(tasks__status='done'))
+    )
+    
+    projects_data = []
+    for project in user_projects[:3]:
+        projects_data.append({
+            'id': str(project.id),
+            'name': project.name,
+            'tasks': project.total_tasks,
+            'done': project.completed_tasks,
+            'percentage': round((project.completed_tasks / project.total_tasks * 100) if project.total_tasks > 0 else 0),
+            'color': '#1a1a1a',
+        })
+    
+    # ===== DONNÉES HEBDOMADAIRES =====
+    week_data = []
+    for i in range(7):
+        day = week_start + timedelta(days=i)
+        day_tasks = Task.objects.filter(
+            Q(assignee=user) | Q(project__team__members=user),
+            due_date=day
+        ).distinct().count()
+        
+        day_name = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][i]
+        is_today = day == today
+        
+        week_data.append({
+            'day': day_name,
+            'date': day.day,
+            'tasks_count': day_tasks,
+            'is_today': is_today,
+        })
+    
+    # ===== ACTIVITÉ RÉCENTE =====
+    recent_activity = []
+    
+    # Tâches complétées récemment
+    completed_recently = Task.objects.filter(
+        assignee=user,
+        status='done',
+        updated_at__gte=timezone.now() - timedelta(days=7)
+    ).order_by('-updated_at')[:3]
+    
+    for task in completed_recently:
+        time_diff = timezone.now() - task.updated_at
+        if time_diff.days == 0:
+            if time_diff.seconds < 60:
+                time_ago = "À l'instant"
+            elif time_diff.seconds < 3600:
+                time_ago = f"{time_diff.seconds // 60} min"
+            else:
+                time_ago = f"{time_diff.seconds // 3600}h"
+        elif time_diff.days == 1:
+            time_ago = "Hier"
+        else:
+            time_ago = f"{time_diff.days}j"
+        
+        recent_activity.append({
+            'avatar': ''.join([n[0] for n in user.name.split()]),
+            'user_name': user.name,
+            'action': f'a terminé "{task.title}"',
+            'time_ago': time_ago,
+            'timestamp': task.updated_at.isoformat(),
+        })
+    
+    # ===== RÉPONSE COMPLÈTE =====
+    return Response({
+        'user': {
+            'name': user.name,
+            'email': user.email,
+            'image': user.image or '',
+            'date_today': today.strftime('%A %d %B %Y').capitalize(),
+        },
+        'stats': stats,
+        'tasks': tasks_data,
+        'projects': projects_data,
+        'week_data': week_data,
+        'recent_activity': recent_activity,
+    }, status=status.HTTP_200_OK)
