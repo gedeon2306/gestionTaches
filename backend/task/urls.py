@@ -8,7 +8,8 @@ from .views import (
     forgot_password,
     confirm_password,
     reset_password_confirm,
-    OAuthView, 
+    OAuthView,
+    dashboard_view,
     # meView
 )
 
@@ -36,6 +37,9 @@ urlpatterns = [
     
     # OAuth (Google/GitHub)
     path('auth/oauth/', OAuthView.as_view()),
+    
+    # Dashboard
+    path('dashboard/', dashboard_view, name='dashboard'),
     
     # # Profil
     # path('user/me/', meView),
