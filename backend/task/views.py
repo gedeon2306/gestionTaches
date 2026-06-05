@@ -1,8 +1,12 @@
 import requests
+from datetime import timedelta
 
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.db import models
+from django.db.models import Count, Q
+from django.db.models.functions import TruncDate
+from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.models import BaseUserManager
@@ -21,7 +25,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 
-from .models import User, Account
+from .models import User, Account, Task, Project, Team
 from .serializers import RegisterSerializer, UserSerializer
 
 from .tokens import email_confirmation_token_generator
@@ -539,3 +543,4 @@ class OAuthView(APIView):
             )
 
         return Response(get_tokens(user))
+
