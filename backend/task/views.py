@@ -571,4 +571,66 @@ def dashboard(request):
     """
     Endpoint du dashboard retournant toutes les données nécessaires
     """
+    user = request.user
+    today = timezone.now().date()
+    
+    # ===== STATISTIQUES =====
+    total_tasks = Task.objects.filter(
+        Q(assignee=user) | Q(project__team__members=user)
+    ).distinct().count()
+    
+    completed_tasks = Task.objects.filter(
+        Q(assignee=user) | Q(project__team__members=user),
+        status='done'
+    ).distinct().count()
+    
+    in_progress_tasks = Task.objects.filter(
+        Q(assignee=user) | Q(project__team__members=user),
+        status='inprogress'
+    ).distinct().count()
+    
+    pending_tasks = Task.objects.filter(
+        Q(assignee=user) | Q(project__team__members=user),
+        status='todo'
+    ).distinct().count()
+    
+    # Calculer les pourcentages
+    completion_percentage = round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0)
+    
+    # Compter les tâches en retard
+    overdue_tasks = Task.objects.filter(
+        Q(assignee=user) | Q(project__team__members=user),
+        status__in=['todo', 'inprogress'],
+        due_date__lt=today
+    ).distinct().count()
+    
+    # Tâches non assignées de mes projets
+    unassigned_tasks = Task.objects.filter(
+        project__team__members=user,
+        assignee__isnull=True
+    ).distinct().count()
+    
+    # Tâches ajoutées cette semaine
+    week_start = today - timedelta(days=today.weekday())
+    tasks_this_week = Task.objects.filter(
+        Q(assignee=user) | Q(project__team__members=user),
+        created_at__date__gte=week_start,
+        created_at__date__lte=today
+    ).distinct().count()
+    
+    stats = {
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'completion_percentage': completion_percentage,
+        'in_progress_tasks': in_progress_tasks,
+        'overdue_tasks': overdue_tasks,
+        'pending_tasks': pending_tasks,
+        'unassigned_tasks': unassigned_tasks,
+        'tasks_added_this_week': tasks_this_week,
+        'tasks_today': Task.objects.filter(
+            Q(assignee=user) | Q(project__team__members=user),
+            due_date=today
+        ).distinct().count(),
+    }
+    
     
